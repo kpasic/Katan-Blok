@@ -6,32 +6,9 @@ using System.Threading.Tasks;
 
 namespace BlokProjekat
 {
-
-    public enum Resources
-    {
-        Wheat,
-        Wool,
-        Wood,
-        Stone,
-        Brick,
-    }
-    public interface Player
-    {
-        public string Name { get; }
-        public  Dictionary<Resources, int> resources { get; set; }
-
-        public int ResourcesCount { get; }
-        public  Task<Move> GetMove();
-
-        public Task<int[]> Discard();
-
-        public Task Roll();
-        
-    }
-
     public class HumanPlayer : Player
     {
-        private TaskCompletionSource<Move> ?ui;
+        private TaskCompletionSource<Move>? ui;
         private TaskCompletionSource<int[]>? ds;
         private TaskCompletionSource rl;
 
@@ -57,7 +34,7 @@ namespace BlokProjekat
                 return count;
             }
         }
-        
+
         public Task<Move> GetMove()
         {
             ui = new TaskCompletionSource<Move>();
