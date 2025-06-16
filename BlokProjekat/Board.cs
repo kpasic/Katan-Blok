@@ -94,7 +94,9 @@ namespace BlokProjekat
         }
 
         void dfs()
+        {
 
+        }
     }
 
     #endregion
@@ -156,7 +158,37 @@ namespace BlokProjekat
 
         private void AddAllEdges()
         {
-            
+            boardGraph.AddEdge(0,1);
+            boardGraph.AddEdge(1,2);
+            boardGraph.AddEdge(0,3);
+            boardGraph.AddEdge(0,4);
+            boardGraph.AddEdge(1,4);
+            boardGraph.AddEdge(1,5);
+            boardGraph.AddEdge(2,5);
+            boardGraph.AddEdge(2,6);
+            boardGraph.AddEdge(3,4);
+            boardGraph.AddEdge(3,7);
+            boardGraph.AddEdge(3,8);
+            boardGraph.AddEdge(4,5);
+            boardGraph.AddEdge(4,8);
+            boardGraph.AddEdge(4,9);
+            boardGraph.AddEdge(5,6);
+            boardGraph.AddEdge(5,9);
+            boardGraph.AddEdge(5,10);
+            boardGraph.AddEdge(6,10);
+            boardGraph.AddEdge(6,11);
+            boardGraph.AddEdge(7,8);
+            boardGraph.AddEdge(7,12);
+            boardGraph.AddEdge(8,9);
+            boardGraph.AddEdge(8,12);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
         }
 
         private void GenerateTiles()
