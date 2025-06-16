@@ -25,6 +25,7 @@ namespace BlokProjekat
 
         public Task<int[]> Discard();
 
+        public Task Roll();
         
     }
 
@@ -32,6 +33,7 @@ namespace BlokProjekat
     {
         private TaskCompletionSource<Move> ?ui;
         private TaskCompletionSource<int[]>? ds;
+        private TaskCompletionSource rl;
 
         public event Action<HumanPlayer> OnMoveRequested;
         public event Action<HumanPlayer> OnDiscardRequested;
@@ -73,6 +75,12 @@ namespace BlokProjekat
 
             return ds.Task;
 
+        }
+
+        public Task Roll()
+        {
+            rl = new TaskCompletionSource();
+            //ask ui to roll.
         }
 
         public void SubmitMove(Move move)

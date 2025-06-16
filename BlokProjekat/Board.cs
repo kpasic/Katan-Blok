@@ -166,9 +166,7 @@ namespace BlokProjekat
             while(n>1)
             {
                 int k = rnd.Next(n--);
-                Tile tile = board[n];
-                board[n] = board[k];
-                board[k] = tile;
+                (board[n], board[k]) = (board[k], board[n]);
             }
         }
 
