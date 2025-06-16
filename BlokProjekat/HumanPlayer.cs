@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlokProjekat
+namespace Catan
 {
     public class HumanPlayer : Player
     {
@@ -15,11 +15,13 @@ namespace BlokProjekat
         public event Action<HumanPlayer> OnMoveRequested;
         public event Action<HumanPlayer> OnDiscardRequested;
         public string Name { get; }
+        public int Id { get; }
         public Dictionary<Resources, int> resources { get; set; }
-        public HumanPlayer(string name)
+        public HumanPlayer(string name, int id)
         {
             Name = name;
             resources = new Dictionary<Resources, int>();
+            Id = id;
         }
 
         public int ResourcesCount
@@ -44,21 +46,7 @@ namespace BlokProjekat
             return ui.Task;
         }
 
-        public Task<int[]> Discard()
-        {
-            ds = new TaskCompletionSource<int[]>(5);
-
-            OnDiscardRequested?.Invoke(this);
-
-            return ds.Task;
-
-        }
-
-        public Task Roll()
-        {
-            rl = new TaskCompletionSource();
-            //ask ui to roll.
-        }
+      
 
         public void SubmitMove(Move move)
         {

@@ -18,14 +18,11 @@ namespace Catan
     public interface Player
     {
         public string Name { get; }
+        public int Id { get; }
         public  Dictionary<Resources, int> resources { get; set; }
 
         public int ResourcesCount { get; }
         public  Task<Move> GetMove();
-
-        public Task<int[]> Discard();
-
-        public Task Roll();
         
     }
 

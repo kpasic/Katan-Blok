@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catan", "Catan\Catan.csproj", "{4680F9D4-2D8A-4000-BE65-4610DBDDE024}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CServer", "CServer\CServer.csproj", "{CACAB187-BEC8-4EFC-8A7D-631D01436D31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4680F9D4-2D8A-4000-BE65-4610DBDDE024}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4680F9D4-2D8A-4000-BE65-4610DBDDE024}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4680F9D4-2D8A-4000-BE65-4610DBDDE024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
