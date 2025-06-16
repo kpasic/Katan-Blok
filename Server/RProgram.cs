@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    internal class NetworkPlayer
+    public class RProgram
     {
-        
-
+        public static void Main()
+        {
+            Game game = new Game();
+        }
     }
 }
