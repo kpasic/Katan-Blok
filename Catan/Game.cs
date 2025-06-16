@@ -47,7 +47,7 @@ namespace Catan
                 Move move = await curPlayer.GetMove();
                 if (move != null)
                 {
-                    move.Execute(board);
+                    move.Execute(board, curPlayer);
                 }
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
             }
