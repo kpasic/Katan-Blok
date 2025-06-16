@@ -99,6 +99,7 @@ namespace Catan
     {
         int n;
         bool nasaoKombinaciju = false;
+        int []susedi = {1, 2, 6, 7, 3,4,5,8,9,10,11,15,16,12,13,14,17,18,18};
         List<int>[] graph;
         MultiSet<int> allNumbers;
         int[] numberpermutation;
@@ -139,12 +140,7 @@ namespace Catan
                     nasaoKombinaciju = true;
                     return;
                 }
-                foreach (int x in graph[nod])
-                {
-                    if (visited[x]) continue;
-                    dfs(x, cnt + 1);
-                    if (nasaoKombinaciju) return;
-                }
+                dfs(susedi[nod], cnt + 1);
             }
             else
             {
@@ -152,7 +148,7 @@ namespace Catan
                 for(int i=2; i<=12; i++)if (allNumbers.Contains(i)) trcnt++;
                 int[] trpermutation = new int[trcnt];
                 trcnt = 0;
-                for (int i = 2; i <= 12; i++) if (allNumbers.Contains(i)) trpermutation[trcnt++]++;
+                for (int i = 2; i <= 12; i++) if (allNumbers.Contains(i)) trpermutation[trcnt++]= i;
                 GenerateRandomPermutation(trpermutation);
                 foreach(int nm in trpermutation)
                 {
@@ -174,12 +170,7 @@ namespace Catan
                             nasaoKombinaciju = true;
                             return;
                         }
-                        foreach (int x in graph[nod])
-                        {
-                            if (visited[x]) continue;
-                            dfs(x, cnt + 1);
-                            if (nasaoKombinaciju) return;
-                        }
+                        dfs(susedi[nod],cnt + 1);
 
                     }
                     allNumbers.Add(nm);
@@ -200,7 +191,7 @@ namespace Catan
         {
             allNumbers.Remove(7);
             Random rnd = new Random();
-            dfs(rnd.Next(19), 1);
+            dfs(0, 1);
             return numberpermutation;
         }
 
