@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace BlokProjekat
 
     #region Classes
 
-    public class MultiSet<T>: IEnumerable<T>
+    public class MultiSet<T>
     {
         private Dictionary<T, int> setic;
 
@@ -63,44 +62,20 @@ namespace BlokProjekat
         {
             foreach (var item in items)
                 Add(item);
-        }
-
-        public void Remove(T item)
-        {
-            if (!setic.ContainsKey(item))
-                throw new ArgumentException();
-            if (--setic[item] == 0)
-                setic.Remove(item);
-        }
-
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            foreach (var kvp in setic)
-                for (int i = 0; i < kvp.Value; i++)
-                    yield return kvp.Key;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
+        }      
     }
 
         public struct Graph
     {
         int n;
-        bool nasaoKombinaciju;
         List<int>[] graph;
         MultiSet<int> allNumbers;
         int[] numberpermutation;
-        bool[] visited;
         public Graph(int n)
         {
             this.n = n;
             graph = new List<int>[n];
             numberpermutation = new int[n];
-            visited = new bool[n];
         }
 
         public Graph(int n,int[] numbers,int position7)
@@ -110,7 +85,6 @@ namespace BlokProjekat
             numberpermutation = new int[n];
             allNumbers.Add(numbers);
             numberpermutation[position7] = 7;
-            visited = new bool[n];
         }
 
         public void AddEdge(int a, int b)
@@ -119,52 +93,9 @@ namespace BlokProjekat
             graph[b].Add(a);
         }
 
-        void dfs(int nod, int cnt)
+        void dfs()
         {
-            visited[nod] = true;
-            foreach(int nm in allNumbers)
-            {
-                allNumbers.Remove(nm);
-                numberpermutation[nod] = nm;
-                bool isValid = true;
-                foreach (int x in graph[nod])
-                {
-                    if (numberpermutation[x] == nm || checkValid68(nm, numberpermutation[x]))
-                    {
-                        isValid = false; break;
-                    }
-                }
-                if (isValid)
-                {
-                    if(cnt == n)
-                    {
-                        nasaoKombinaciju = true;
-                        return;
-                    }
-                    foreach (int x in graph[nod])
-                    {
-                        if (visited[x]) continue;
-                        dfs(x,cnt+1);
-                        if (nasaoKombinaciju) return;
-                    }
-             
-                }
-                allNumbers.Add(nm);
-                numberpermutation[nod] = 0;
-            }
-           
-        }
 
-       private bool checkValid68(int a, int b)
-        {
-            return (Math.Min(a, b) == 6 && Math.Max(a, b) == 8);
-        }
-        
-
-        public int[] GeneratePermutation()
-        {
-            dfs(0);
-            return numberpermutation;
         }
     }
 
@@ -216,7 +147,6 @@ namespace BlokProjekat
         {
             GenerateTiles();
             boardGraph = new Graph(n, numbers,FindEmpty());
-            AddAllEdges();
             GenerateNumbers();
         }
 
@@ -226,24 +156,39 @@ namespace BlokProjekat
             return -1;
         }
 
-        private void AddRow(int a,int b, int x)
-        {
-            for(int i=a; i<=b;i++)if (i != b) boardGraph.AddEdge(i, i + 1);
-            if (x == 0) return;   
-            for(int i=a;i<=b; i++)
-            { 
-                boardGraph.AddEdge(i, i + x);
-                boardGraph.AddEdge(i, i + x+1);
-            }
-        }
-
         private void AddAllEdges()
         {
-            AddRow(0,2,3);
-            AddRow(3, 6, 4);
-            AddRow(7, 11, 0);
-            AddRow(12, 15, -5);
-            AddRow(16, 18, -4);
+            boardGraph.AddEdge(0,1);
+            boardGraph.AddEdge(1,2);
+            boardGraph.AddEdge(0,3);
+            boardGraph.AddEdge(0,4);
+            boardGraph.AddEdge(1,4);
+            boardGraph.AddEdge(1,5);
+            boardGraph.AddEdge(2,5);
+            boardGraph.AddEdge(2,6);
+            boardGraph.AddEdge(3,4);
+            boardGraph.AddEdge(3,7);
+            boardGraph.AddEdge(3,8);
+            boardGraph.AddEdge(4,5);
+            boardGraph.AddEdge(4,8);
+            boardGraph.AddEdge(4,9);
+            boardGraph.AddEdge(5,6);
+            boardGraph.AddEdge(5,9);
+            boardGraph.AddEdge(5,10);
+            boardGraph.AddEdge(6,10);
+            boardGraph.AddEdge(6,11);
+            boardGraph.AddEdge(7,8);
+            boardGraph.AddEdge(7,12);
+            boardGraph.AddEdge(8,9);
+            boardGraph.AddEdge(8,12);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
+            boardGraph.AddEdge(8,13);
         }
 
         private void GenerateTiles()
