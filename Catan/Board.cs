@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,9 +33,14 @@ namespace BlokProjekat
 
     #region Classes
 
-    public class MultiSet<T> : IEnumerable<T>
+    public class MultiSet<T>:IEnumerable<T>
     {
         private Dictionary<T, int> setic;
+
+        public int Count()
+        {
+            return setic.Count; 
+        }
 
         public MultiSet()
         {
@@ -73,7 +79,6 @@ namespace BlokProjekat
                 setic.Remove(item);
         }
 
-
         public IEnumerator<T> GetEnumerator()
         {
             foreach (var kvp in setic)
@@ -85,12 +90,15 @@ namespace BlokProjekat
         {
             return this.GetEnumerator();
         }
+
+
+
     }
 
     public struct Graph
     {
         int n;
-        bool nasaoKombinaciju;
+        bool nasaoKombinaciju = false;
         List<int>[] graph;
         MultiSet<int> allNumbers;
         int[] numberpermutation;
@@ -107,6 +115,8 @@ namespace BlokProjekat
         {
             this.n = n;
             graph = new List<int>[n];
+            for(int i=0; i<n; i++) graph[i] = new List<int>();
+            allNumbers = new MultiSet<int>();
             numberpermutation = new int[n];
             allNumbers.Add(numbers);
             numberpermutation[position7] = 7;
@@ -122,36 +132,61 @@ namespace BlokProjekat
         void dfs(int nod, int cnt)
         {
             visited[nod] = true;
-            foreach (int nm in allNumbers)
+            if (numberpermutation[nod] == 7)
             {
-                allNumbers.Remove(nm);
-                numberpermutation[nod] = nm;
-                bool isValid = true;
+                if (cnt == n)
+                {
+                    nasaoKombinaciju = true;
+                    return;
+                }
                 foreach (int x in graph[nod])
                 {
-                    if (numberpermutation[x] == nm || checkValid68(nm, numberpermutation[x]))
-                    {
-                        isValid = false; break;
-                    }
+                    if (visited[x]) continue;
+                    dfs(x, cnt + 1);
+                    if (nasaoKombinaciju) return;
                 }
-                if (isValid)
+            }
+            else
+            {
+                int trcnt = 0;
+                for(int i=2; i<=12; i++)if (allNumbers.Contains(i)) trcnt++;
+                int[] trpermutation = new int[trcnt];
+                trcnt = 0;
+                for (int i = 2; i <= 12; i++) if (allNumbers.Contains(i)) trpermutation[trcnt++]++;
+                GenerateRandomPermutation(trpermutation);
+                foreach(int nm in trpermutation)
                 {
-                    if (cnt == n)
-                    {
-                        nasaoKombinaciju = true;
-                        return;
-                    }
+                    if (!allNumbers.Contains(nm)) continue;
+                    allNumbers.Remove(nm);
+                    numberpermutation[nod] = nm;
+                    bool isValid = true;
                     foreach (int x in graph[nod])
                     {
-                        if (visited[x]) continue;
-                        dfs(x, cnt + 1);
-                        if (nasaoKombinaciju) return;
+                        if (numberpermutation[x] == nm || checkValid68(nm, numberpermutation[x]))
+                        {
+                            isValid = false; break;
+                        }
                     }
+                    if (isValid)
+                    {
+                        if (cnt == n)
+                        {
+                            nasaoKombinaciju = true;
+                            return;
+                        }
+                        foreach (int x in graph[nod])
+                        {
+                            if (visited[x]) continue;
+                            dfs(x, cnt + 1);
+                            if (nasaoKombinaciju) return;
+                        }
 
+                    }
+                    allNumbers.Add(nm);
+                    numberpermutation[nod] = 0;
                 }
-                allNumbers.Add(nm);
-                numberpermutation[nod] = 0;
             }
+            
 
         }
 
@@ -161,10 +196,23 @@ namespace BlokProjekat
         }
 
 
-        public int[] GeneratePermutation()
+        public int[] GenerateNumberPermutation()
         {
-            dfs(0, 1);
+            allNumbers.Remove(7);
+            Random rnd = new Random();
+            dfs(rnd.Next(19), 1);
             return numberpermutation;
+        }
+
+        private void GenerateRandomPermutation(int[] array)
+        {
+            int n = array.Length;
+            Random rnd = new Random();
+            while (n > 1)
+            {
+                int k = rnd.Next(n--);
+                (array[n], array[k]) = (array[k], array[n]);
+            }
         }
     }
 
@@ -203,13 +251,13 @@ namespace BlokProjekat
     public class Board
     {
         int n = 19;
-        Tile[] board = {Tile.Empty,
+        public Tile[] board = {Tile.Empty,
             Tile.Wheat, Tile.Wheat, Tile.Wheat, Tile.Wheat,
             Tile.Wool, Tile.Wool, Tile.Wool, Tile.Wool,
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
-        int[] numbers = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+        public int[] numbers = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
         Graph boardGraph;
 
         public void GenerateBoard()
@@ -218,6 +266,11 @@ namespace BlokProjekat
             boardGraph = new Graph(n, numbers, FindEmpty());
             AddAllEdges();
             GenerateNumbers();
+        }
+
+        public int Roll()
+        {
+            throw new NotImplementedException();
         }
 
         private int FindEmpty()
@@ -259,7 +312,7 @@ namespace BlokProjekat
 
         private void GenerateNumbers()
         {
-
+            numbers = boardGraph.GenerateNumberPermutation();
         }
 
     }
