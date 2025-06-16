@@ -1,15 +1,16 @@
 using System.Net.Security;
-
-namespace BlokProjekat
+using Catan;
+namespace ClientApp
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
 
         private Game curGame;
-        public Form1()
+        NetworkClient client;
+        public MainForm()
         {
             InitializeComponent();
-            HumanPlayer test = new HumanPlayer("test");
+            HumanPlayer test = new HumanPlayer("test", 0);
             test.OnMoveRequested += OnMoveRequested;
             test.OnDiscardRequested += OnDiscardRequested;
             
@@ -36,9 +37,20 @@ namespace BlokProjekat
             await curGame.Update();
         }
 
-        private void btnConnectServer_Click(object sender, EventArgs e)
+        private async void btnConnectServer_Click(object sender, EventArgs e)
         {
-
+            using (ConnectDialog dg = new ConnectDialog())
+            {
+                if (dg.ShowDialog() == DialogResult.OK)
+                {
+                    await client.ConnectAsync(dg.ip, dg.port);
+                }
+                else
+                {
+                    throw new Exception("ijao");
+                }
+            }
+        
         }
     }
 }

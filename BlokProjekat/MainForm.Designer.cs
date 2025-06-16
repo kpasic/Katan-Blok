@@ -1,6 +1,6 @@
-﻿namespace BlokProjekat
+﻿namespace ClientApp
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -33,7 +33,7 @@
             btnConnectServer = new Button();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
-            SuspendLayout();
+           
             // 
             // tableLayoutPanel1
             // 

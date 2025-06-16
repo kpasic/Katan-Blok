@@ -1,14 +1,45 @@
 ﻿using System.Threading;
 using System;
-
+using System.Net;
+using System.Net.Sockets;
+using Catan;
+using Server;
 
 namespace RServer{ 
     public class Program
     {
-        public static void Main(string[] args)
+        const int maxPlayers = 2;
+
+        public static async void Main(string[] args)
         {
             Console.WriteLine("Server startup");
+            int port = 5000;
+            TcpListener listener = new TcpListener(IPAddress.Any, port);
+            listener.Start();
+            Console.WriteLine("Server listening");
 
+            List<Player> players = new List<Player>();
+            while(players.Count < maxPlayers)
+            {
+                Console.WriteLine("Waiting for connection...");
+                TcpClient client = await listener.AcceptTcpClientAsync();
+                NetworkStream stream = client.GetStream();
+                Console.WriteLine("Player Connected");
+
+                string name = await NetworkUtils.ReceiveObjectAsync<string>(stream);
+
+                NetworkPlayer newPlayer = new NetworkPlayer(client, stream, name, players.Count);
+                players.Add(newPlayer);
+            }
+
+            Game game = new Game(players);
+            await game.Update();
+
+
+            //promeniti ovo eventualno..
+
+            Console.WriteLine("Kraj");
+            listener.Stop();
         }
     }
 }
