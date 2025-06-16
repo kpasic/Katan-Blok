@@ -10,6 +10,7 @@ namespace BlokProjekat
             InitializeComponent();
             HumanPlayer test = new HumanPlayer("test");
             test.OnMoveRequested += OnMoveRequested;
+            test.OnDiscardRequested += OnDiscardRequested;
             PlayerList = new List<Player> {test };
             curGame = new Game(PlayerList);
 
@@ -22,6 +23,12 @@ namespace BlokProjekat
 
             player.SubmitMove(place);
             //ui sranja.
+        }
+
+        private void OnDiscardRequested(HumanPlayer player)
+        {
+            //mora da dozvoli submit samo ako je broj discardovanih ok.
+
         }
 
         private async void StartGame()
