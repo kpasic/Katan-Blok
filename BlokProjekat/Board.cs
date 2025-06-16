@@ -101,22 +101,36 @@ namespace BlokProjekat
 
     #endregion
 
+
+    #region Moves
     public abstract class Move
     {
-        public abstract void Execute(Board board);
+        public abstract void Execute(Board board, Player player);
     }
 
     public class Place : Move
     {
         int targetSpaceId;
         Space targetSpace;
-        public override void Execute(Board board)
+        public override void Execute(Board board, Player player)
         {
             
         }
     }
-    
 
+
+
+    #endregion
+
+
+    public class Node
+    {
+        public Player Owner { get; private set; }
+        public Space Type {  get; private set; }
+
+        public void SetOwner(Player player) { Owner = player; }
+        public void SetType(Space type) { Type = type; }
+    }
     public class Board
     {
         int n = 19;

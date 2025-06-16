@@ -20,16 +20,11 @@ namespace BlokProjekat
         public int discardLimit {get; private set;}
         public int victoryPoints { get; private set; }
 
-        public Game(Board board)
-        {
-            this.board = board;
-            currentPlayerIndex = 0;
-        }
 
         public Game(List<Player> players)
         {
             this.players = players;
-            currentPlayerIndex = 0;
+  
         }
 
         public async Task Update()
