@@ -1,18 +1,18 @@
+using System.Net.Security;
+
 namespace BlokProjekat
 {
     public partial class Form1 : Form
     {
 
         private Game curGame;
-        public List<Player> PlayerList;
         public Form1()
         {
             InitializeComponent();
             HumanPlayer test = new HumanPlayer("test");
             test.OnMoveRequested += OnMoveRequested;
             test.OnDiscardRequested += OnDiscardRequested;
-            PlayerList = new List<Player> {test };
-            curGame = new Game(PlayerList);
+            
 
         }
 
@@ -34,6 +34,11 @@ namespace BlokProjekat
         private async void StartGame()
         {
             await curGame.Update();
+        }
+
+        private void btnConnectServer_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

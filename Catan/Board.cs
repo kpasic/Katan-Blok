@@ -7,7 +7,7 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlokProjekat
+namespace Catan
 {
 
     #region Polja

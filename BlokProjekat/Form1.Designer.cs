@@ -73,8 +73,9 @@
             btnConnectServer.Name = "btnConnectServer";
             btnConnectServer.Size = new Size(99, 59);
             btnConnectServer.TabIndex = 0;
-            btnConnectServer.Text = "button1";
+            btnConnectServer.Text = "Connect to server";
             btnConnectServer.UseVisualStyleBackColor = true;
+            btnConnectServer.Click += btnConnectServer_Click;
             // 
             // Form1
             // 
