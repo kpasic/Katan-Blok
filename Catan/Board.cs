@@ -274,7 +274,7 @@ namespace Catan
         Graph boardGraph;
         public int[,] housePositions;
         public int[,] roadsPositions;
-
+        
         public Board() {
             n = 19;
             board = new Tile[]{
