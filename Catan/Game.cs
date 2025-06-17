@@ -24,7 +24,7 @@ namespace Catan
         public Game(List<Player> players)
         {
             this.players = players;
-  
+            Board board = new Board(players.Count);
         }
 
         public async Task Update()
