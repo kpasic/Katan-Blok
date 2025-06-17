@@ -290,6 +290,7 @@ namespace Catan
             Owner = null;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
+            for(int i=0; i<nmPlayers; i++)isAvailable.Add(i);
         }
 
         private HashSet<int> isAvailable;
@@ -510,17 +511,17 @@ namespace Catan
                 housePositions[i, poz++] = first++ + off;
                 housePositions[i, poz++] = first ;
                 housePositions[i, poz++] = first + off;
-
-
             }
         }
 
         
         #endregion
 
+        /*
         public (List<RoadMove>, List<HouseMove>) GetLegalPlaceMoves(Player player)
         {
 
         }
+        */
     }
 }
