@@ -293,6 +293,7 @@ namespace Catan
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
+            numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
             GenerateBoard();
             housePositions = new int[n,6];
             roadsPositions = new int[n,6];
@@ -302,7 +303,7 @@ namespace Catan
             for (int i = 0; i < cntRoads; i++) allRoads[i] = new Node();
             GenerateHousePositions();
             GenerateRoadsPositions();
-            numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+            
 
         }
 
