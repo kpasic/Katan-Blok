@@ -18,6 +18,23 @@ namespace Server
             {
                 Console.Write("{0} ", board.numbers[i]);
             }
+            Console.WriteLine();
+            for (int i= 0; i < 19; i++)
+            {
+                for(int j=0; j<6; j++)
+                {
+                    Console.Write("{0} ", board.housePositions[i,j]);
+                }
+                Console.WriteLine();
+            }
+            for (int i = 0; i < 19; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    Console.Write("{0} ", board.roadsPositions[i, j]);
+                }
+                Console.WriteLine();
+            }
         }
     }
 }

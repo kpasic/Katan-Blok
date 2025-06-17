@@ -31,7 +31,7 @@ namespace Catan
 
     #endregion
 
-    #region Classes
+    #region Structure
 
     public class MultiSet<T>:IEnumerable<T>
     {
@@ -244,14 +244,28 @@ namespace Catan
     public class Board
     {
         int n = 19;
-        public Tile[] board = {Tile.Empty,
+        public Tile[] board;
+        public int[] numbers = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+        Graph boardGraph;
+        public int[,] housePositions;
+        public int[,] roadsPositions;
+
+        public Board() {
+            n = 19;
+            board = new Tile[]{
+                Tile.Empty,
             Tile.Wheat, Tile.Wheat, Tile.Wheat, Tile.Wheat,
             Tile.Wool, Tile.Wool, Tile.Wool, Tile.Wool,
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
-        public int[] numbers = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
-        Graph boardGraph;
+            housePositions = new int[n,6];
+            roadsPositions = new int[n,6];
+            GenerateHousePositions();
+            GenerateRoadsPositions();
+            numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+
+        }
 
         
 
@@ -265,6 +279,8 @@ namespace Catan
             for (int i = 0; i < n; i++) if (board[i] == Tile.Empty) return i;
             return -1;
         }
+
+        
 
         #region BoardGeneration
         public void GenerateBoard()
@@ -309,6 +325,57 @@ namespace Catan
         private void GenerateNumbers()
         {
             numbers = boardGraph.GenerateNumberPermutation();
+        }
+        private void GenerateRoadsPositions()
+        {
+            GenerateRoadsPositionsRow(0, 2,0, 6, 11);
+            GenerateRoadsPositionsRow(3, 6,10, 18, 14);
+            GenerateRoadsPositionsRow(7, 11,23, 33, 16);
+            GenerateRoadsPositionsRow(12, 15,40, 49, 14);
+            GenerateRoadsPositionsRow(16, 18,55, 61, 10);
+        }
+
+        private void GenerateRoadsPositionsRow(int a, int b, int first, int mid, int off)
+        {
+            for (int i = a; i <= b; i++)
+            {
+                int poz = 0;
+                roadsPositions[i, poz++] = first;
+                roadsPositions[i, poz++] = first++ + off;
+                roadsPositions[i, poz++] = mid;
+                roadsPositions[i, poz++] = ++mid;
+                roadsPositions[i, poz++] = first;
+                roadsPositions[i, poz++] = first++ + off;
+
+
+            }
+        }
+
+
+        private void GenerateHousePositions()
+        {
+            GenerateHousePositionsRow(0, 2, 0, 8);
+            GenerateHousePositionsRow(3, 6, 7, 10);
+            GenerateHousePositionsRow(7, 11, 16, 11);
+            GenerateHousePositionsRow(12, 15, 28, 10);
+            GenerateHousePositionsRow(16, 18, 39, 8);
+        }
+
+        private void GenerateHousePositionsRow(int a, int b, int first, int off)
+        {
+           
+            for (int i = a; i <= b; i++)
+            {
+                int poz = 0;
+                housePositions[i, poz++] = first;
+                housePositions[i, poz++] = first++ + off;
+                housePositions[i, poz++] = first ;
+                housePositions[i, poz++] = first++ + off;
+                housePositions[i, poz++] = first ;
+                housePositions[i, poz++] = first + off;
+
+
+            }
         }
         #endregion
     }
