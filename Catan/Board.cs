@@ -218,13 +218,21 @@ namespace Catan
         public abstract void Execute(Board board, Player player);
     }
 
-    public class PlaceMove : Move
+    public class HouseMove : Move
     {
         int targetSpaceId;
         Space targetSpace;
         public override void Execute(Board board, Player player)
         {
 
+        }
+    }
+
+    public class RoadMove : Move
+    {
+        public override void Execute(Board board, Player player)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -417,6 +425,13 @@ namespace Catan
 
             }
         }
+
+        
         #endregion
+
+        public (List<RoadMove>, List<HouseMove>) GetLegalPlaceMoves(Player player)
+        {
+
+        }
     }
 }
