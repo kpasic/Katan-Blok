@@ -53,8 +53,8 @@ namespace ClientApp
             // Colors
             colors = new Dictionary<Tile, SolidBrush>();
             colors.Add(Tile.Empty, new SolidBrush(Color.LightGoldenrodYellow));
-            colors.Add(Tile.Wheat, new SolidBrush(Color.Wheat));
-            colors.Add(Tile.Wood, new SolidBrush(Color.RosyBrown));
+            colors.Add(Tile.Wheat, new SolidBrush(Color.Yellow));
+            colors.Add(Tile.Wood, new SolidBrush(Color.DarkGreen));
             colors.Add(Tile.Wool, new SolidBrush(Color.LimeGreen));
             colors.Add(Tile.Brick, new SolidBrush (Color.OrangeRed));
             colors.Add(Tile.Stone, new SolidBrush(Color.DarkSlateGray));
@@ -172,19 +172,21 @@ namespace ClientApp
         private void DrawGame(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            int Size = (int)(gamePanel.Height * gameScale);
-            int topMargin = (int)(gamePanel.Height * gameTopMargin);
-            int leftMargin = (int)(gamePanel.Width * gameLeftMargin);
+            float Size = gamePanel.Height * gameScale;
+            float topMargin = gamePanel.Height * gameTopMargin;
+            float leftMargin = gamePanel.Width * gameLeftMargin;
 
             
 
             
             SolidBrush p = new SolidBrush(Color.CadetBlue);
-            g.FillPolygon(p, GetHexagonPoints(new Point(gamePanel.Top + topMargin, gamePanel.Left + leftMargin), Size, false));
+            g.FillPolygon(p, GetHexagonPoints(new Point((int)(gamePanel.Left + leftMargin), (int)(gamePanel.Top + topMargin)), Size, false));
 
-            int cellSize = (int)(Size / 6f);
-            int sLeftOffset = gamePanel.Left + leftMargin + Size / 20;
-            int sTopOffset = gamePanel.Top + topMargin + Size / 20;
+            float cellSize = Size / 5.5f;
+            float sLeftOffset = gamePanel.Left + leftMargin + Size / 5f;
+            float sTopOffset = gamePanel.Top + topMargin + Size / 20f;
+
+
 
             int[] rowOffsets = { 3, 7, 12, 16, 19};
             
@@ -193,11 +195,14 @@ namespace ClientApp
             {
                 if (i == rowOffsets[currentRow]) {
                     Debug.WriteLine("secerlema " + currentRow);
+                    if (currentRow < 2) sLeftOffset -= cellSize / 2f;
+                    else sLeftOffset += cellSize / 2f;
                     currentRow++;
                 }
                 int currentColumn = i;
                 if (currentRow != 0) currentColumn -= rowOffsets[currentRow - 1];
-                g.FillPolygon(colors[tempBoard.board[i]], GetHexagonPoints(new Point(sLeftOffset + (cellSize / 2) * currentColumn, sTopOffset + (cellSize / 2) * currentRow), cellSize, true));
+                g.FillPolygon(colors[tempBoard.board[i]], GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + cellSize * currentRow)), cellSize, true));
+                g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + cellSize * currentRow), (int)cellSize, (int)cellSize));
             }
 
         }
