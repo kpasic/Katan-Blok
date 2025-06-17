@@ -20,7 +20,7 @@ namespace ClientApp
         private void OnMoveRequested(HumanPlayer player)
         {
             //curGame.board.GetLegalMoves();
-            Place place = new Place();
+            PlaceMove place = new PlaceMove();
 
             player.SubmitMove(place);
             //ui sranja.

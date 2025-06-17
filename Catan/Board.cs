@@ -218,7 +218,7 @@ namespace Catan
         public abstract void Execute(Board board, Player player);
     }
 
-    public class Place : Move
+    public class PlaceMove : Move
     {
         int targetSpaceId;
         Space targetSpace;
@@ -227,6 +227,31 @@ namespace Catan
 
         }
     }
+
+    public class TradeMove : Move
+    {
+        public override void Execute(Board board, Player player)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RobberMove : Move
+    {
+        public override void Execute(Board board, Player player)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class UpgradeMove : Move
+    {
+        public override void Execute(Board board, Player player)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 
 
 
