@@ -18,7 +18,7 @@ namespace ClientApp
         Board tempBoard = new Board();
 
         Dictionary<Tile, SolidBrush> colors;
-        
+        Dictionary<int, Point> HousePoints;
         public MainForm()
         {
             InitializeComponent();
@@ -64,9 +64,9 @@ namespace ClientApp
         private void OnMoveRequested(HumanPlayer player)
         {
             //curGame.board.GetLegalMoves();
-            PlaceMove place = new PlaceMove();
+            //PlaceMove place = new PlaceMove();
 
-            player.SubmitMove(place);
+            //player.SubmitMove(place);
             //ui sranja.
         }
 
@@ -152,7 +152,7 @@ namespace ClientApp
         {
             Point[] points = new Point[6];
 
-            double r = sideLength / Math.Sqrt(3);  
+            double r = sideLength / 2f;
             double centerX = topLeft.X + sideLength / 2.0;
             double centerY = topLeft.Y + sideLength / 2.0;
 
@@ -176,33 +176,42 @@ namespace ClientApp
             float topMargin = gamePanel.Height * gameTopMargin;
             float leftMargin = gamePanel.Width * gameLeftMargin;
 
-            
 
-            
+
+
             SolidBrush p = new SolidBrush(Color.CadetBlue);
-            g.FillPolygon(p, GetHexagonPoints(new Point((int)(gamePanel.Left + leftMargin), (int)(gamePanel.Top + topMargin)), Size, false));
+            g.FillPolygon(p, GetHexagonPoints(new Point((int)(leftMargin), (int)(topMargin)), Size, false));
+            g.DrawRectangle(new Pen(Color.Red), (int)leftMargin, (int)topMargin, (int)Size, (int)Size);
+            float cellScale = 1 / 5.5f;
+            float cellSize = Size * cellScale;
 
-            float cellSize = Size / 5.5f;
-            float sLeftOffset = gamePanel.Left + leftMargin + Size / 5f;
-            float sTopOffset = gamePanel.Top + topMargin + Size / 20f;
 
+            float MidLeftOffset = leftMargin + cellSize/4f; //+ Size*MathF.Sqrt(3)/16f;
+            float sTopOffset = Size / 2f + (cellSize - cellSize * MathF.Sqrt(3) / 8f)/4f;
 
+            //Debug.WriteLine($"kys {sTopOffset + 2.5f * (cellSize - cellSize * MathF.Sqrt(3) / 8f) - topMargin - Size/2f}");
 
             int[] rowOffsets = { 3, 7, 12, 16, 19};
-            
+            int[] lOffsets = { 2, 1, 0, 1, 2 };
             int currentRow = 0;
             for(int i = 0; i < 19; i++)
             {
+                float sLeftOffset = MidLeftOffset;
                 if (i == rowOffsets[currentRow]) {
-                    Debug.WriteLine("secerlema " + currentRow);
-                    if (currentRow < 2) sLeftOffset -= cellSize / 2f;
-                    else sLeftOffset += cellSize / 2f;
+                    //Debug.WriteLine("secerlema " + currentRow);
                     currentRow++;
                 }
+                sLeftOffset += lOffsets[currentRow] * cellSize / 2f;
+
+                for(int j = 0; j < tempBoard.housePositions.Length; j++)
+                {
+                    
+                }
+
                 int currentColumn = i;
                 if (currentRow != 0) currentColumn -= rowOffsets[currentRow - 1];
-                g.FillPolygon(colors[tempBoard.board[i]], GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + cellSize * currentRow)), cellSize, true));
-                g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + cellSize * currentRow), (int)cellSize, (int)cellSize));
+                g.FillPolygon(colors[tempBoard.board[i]], GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize * MathF.Sqrt(3) / 8f) * (currentRow-2))), cellSize, true));
+                g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize*MathF.Sqrt(3)/8f) * (currentRow-2)), (int)cellSize, (int)cellSize));
             }
 
         }
