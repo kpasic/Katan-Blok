@@ -224,6 +224,17 @@ namespace Catan
             graph[a].Add(edge);
             graph[b].Add(edge);
         }
+
+        public HashSet<int> AddAdjecent(int a)
+        {
+            HashSet<int> adj = new HashSet<int> ();
+            foreach(Edge n in graph[a])
+            {
+                adj.Add(n.nod1.nodeIndex);
+                adj.Add(n.nod2.nodeIndex);
+            }
+            return adj;
+        }
     }
 
     #endregion
@@ -237,11 +248,11 @@ namespace Catan
 
     public class HouseMove : Move
     {
-        int targetSpaceId;
-        Space targetSpace;
+        int nodeId;
+        Space nodeSpace;
         public override void Execute(Board board, Player player)
         {
-
+            board.PlaceHouse(nodeId, player, nodeSpace);
         }
     }
 
@@ -286,14 +297,16 @@ namespace Catan
     public class Node
     {
 
-        public Node() {
+        public Node(int nmPlayers, int index) {
             Owner = null;
+            nodeIndex = index;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
             //for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
         }
 
         private HashSet<int> isAvailable;
+        public int nodeIndex;
 
         public bool CanPlace(int playerId)
         {
@@ -303,14 +316,14 @@ namespace Catan
         public Player? Owner { get; private set; }
         public Space Type { get; private set; }
 
-        public void SetOwner(Player player) { Owner = player; }
+        public void SetOwner(Player? player) { Owner = player; }
         public void SetType(Space type) { Type = type; }
     }
 
     public class Edge
     {
-        Node nod1;
-        Node nod2;
+        public Node nod1;
+        public Node nod2;
 
         public Edge(Node n1, Node n2)
         {
@@ -326,7 +339,11 @@ namespace Catan
         private HashSet<int> isAvailable;
         public Player? Owner { get; private set; }
         public Space Type { get; private set; }
-        public void SetOwner(Player player) { Owner = player; }
+        public void SetOwner(Player player) 
+        {
+            Owner = player;
+            isAvailable.Clear();
+        }
         public void SetType(Space type) { Type = type; }
     }
     public class Board
@@ -359,7 +376,7 @@ namespace Catan
             housePositions = new int[n,6];
             roadsPositions = new int[n,6];
             allNodes = new Node[cntNodes];
-            for(int i=0; i<cntNodes; i++) allNodes[i] = new Node();
+            for(int i=0; i<cntNodes; i++) allNodes[i] = new Node(nmPlayers, i);
             allRoads = new Edge[cntRoads];
             placeGraph = new PlaceGraph(cntNodes);
             MakeNodeGraph();
@@ -384,7 +401,7 @@ namespace Catan
             housePositions = new int[n, 6];
             roadsPositions = new int[n, 6];
             allNodes = new Node[cntNodes];
-            for (int i = 0; i < cntNodes; i++) allNodes[i] = new Node();
+            for (int i = 0; i < cntNodes; i++) allNodes[i] = new Node(nmPlayers,i);
             allRoads = new Edge[cntRoads];
             placeGraph = new PlaceGraph(cntNodes);
             MakeNodeGraph();
@@ -427,11 +444,22 @@ namespace Catan
                 start++;
             }
         }
-        public List<Node> AvailableHouseMovesBegining(Player player)
+        public List<int> LegalHouseMovesBegining(Player player)
         {
-            List<Node> result = new List<Node>();
-            for(int i=0; i<cntNodes; i++) if (allNodes[i].CanPlace(player.Id))result.Add(allNodes[i]);
+            List<int> result = new List<int>();
+            for(int i=0; i<cntNodes; i++) if (allNodes[i].CanPlace(player.Id))result.Add(allNodes[i].nodeIndex);
             return result;
+        }
+
+        public void PlaceHouse(int nodeId, Player player, Space nodeSpace)
+        {
+            allNodes[nodeId].SetType(nodeSpace);
+            allNodes[nodeId].SetOwner(player);
+            HashSet<int> adj = placeGraph.AddAdjecent(nodeId);
+            foreach(int i in adj)
+            {
+                allNodes[i].SetOwner(null);
+            }
         }
         
         public int Roll()
