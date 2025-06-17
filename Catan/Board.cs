@@ -141,6 +141,7 @@ namespace Catan
                     return;
                 }
                 dfs(susedi[nod], cnt + 1);
+                if (nasaoKombinaciju) return;
             }
             else
             {
@@ -171,6 +172,7 @@ namespace Catan
                             return;
                         }
                         dfs(susedi[nod],cnt + 1);
+                        if (nasaoKombinaciju) return;
 
                     }
                     allNumbers.Add(nm);

@@ -38,7 +38,7 @@ namespace Catan
                     foreach (Player player in players) {
                         if(player.ResourcesCount > discardLimit)
                         {
-                            await player.Discard();
+                            //await player.Discard();
                         }
                     }
                 }
