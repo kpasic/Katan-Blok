@@ -9,7 +9,7 @@ namespace Server
         {
             Console.WriteLine("test");
             Board board = new Board();
-            board.GenerateBoard();
+            //board.GenerateBoard();
             for(int i=0;i<19; i++)
             {
                 Console.Write("{0} " , board.board[i]);

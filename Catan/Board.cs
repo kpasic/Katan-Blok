@@ -260,7 +260,12 @@ namespace Catan
 
     public class Node
     {
-        public Player Owner { get; private set; }
+
+        public Node() {
+            Owner = null;
+            Type = Space.Empty;
+        }
+        public Player? Owner { get; private set; }
         public Space Type { get; private set; }
 
         public void SetOwner(Player player) { Owner = player; }
@@ -269,12 +274,16 @@ namespace Catan
     public class Board
     {
         int n = 19;
+        int cntNodes = 54;
+        int cntRoads = 71;
         public Tile[] board;
-        public int[] numbers = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+        public int[] numbers;
         Graph boardGraph;
         public int[,] housePositions;
         public int[,] roadsPositions;
-        
+        public Node[] allNodes;
+        public Node[] allRoads;
+
         public Board() {
             n = 19;
             board = new Tile[]{
@@ -284,8 +293,13 @@ namespace Catan
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
+            GenerateBoard();
             housePositions = new int[n,6];
             roadsPositions = new int[n,6];
+            allNodes = new Node[cntNodes];
+            for(int i=0; i<cntNodes; i++) allNodes[i] = new Node();
+            allRoads = new Node[cntRoads];
+            for (int i = 0; i < cntRoads; i++) allRoads[i] = new Node();
             GenerateHousePositions();
             GenerateRoadsPositions();
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
@@ -308,7 +322,7 @@ namespace Catan
         
 
         #region BoardGeneration
-        public void GenerateBoard()
+        private void GenerateBoard()
         {
             GenerateTiles();
             boardGraph = new Graph(n, numbers, FindEmpty());
