@@ -1,4 +1,5 @@
 ﻿using Catan;
+using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
 namespace Server
@@ -8,7 +9,8 @@ namespace Server
         public static void Main()
         {
             Console.WriteLine("test");
-            Board board = new Board();
+            Board board = new Board(4);
+            Player player = new StupidPlayer("cigan", 1);
             //board.GenerateBoard();
             for(int i=0;i<19; i++)
             {
@@ -35,6 +37,10 @@ namespace Server
                 }
                 Console.WriteLine();
             }
+            List<int> availableMoves = board.LegalHouseMovesBegining(player);
+            board.PlaceHouse(availableMoves[0],player, Space.Empty);
+            availableMoves = board.LegalHouseMovesBegining(player);
+            foreach(int n in availableMoves)Console.Write("{0} ",n);
         }
     }
 }

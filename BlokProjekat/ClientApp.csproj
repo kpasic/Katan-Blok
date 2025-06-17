@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catan\Catan.csproj" />
-    <ProjectReference Include="..\Server\Server.csproj" />
   </ItemGroup>
 
 </Project>

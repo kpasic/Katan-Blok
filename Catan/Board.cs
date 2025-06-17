@@ -444,10 +444,10 @@ namespace Catan
                 start++;
             }
         }
-        public List<Node> LegalHouseMovesBegining(Player player)
+        public List<int> LegalHouseMovesBegining(Player player)
         {
-            List<Node> result = new List<Node>();
-            for(int i=0; i<cntNodes; i++) if (allNodes[i].CanPlace(player.Id))result.Add(allNodes[i]);
+            List<int> result = new List<int>();
+            for(int i=0; i<cntNodes; i++) if (allNodes[i].CanPlace(player.Id))result.Add(allNodes[i].nodeIndex);
             return result;
         }
 
