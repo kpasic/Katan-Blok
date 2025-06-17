@@ -341,8 +341,10 @@ namespace Catan
         public int[,] roadsPositions;
         public Node[] allNodes;
         public Edge[] allRoads;
+        int nmPlayers;
 
         public Board() {
+            nmPlayers = 0;
             n = 19;
             board = new Tile[]{
                 Tile.Empty,
@@ -365,7 +367,30 @@ namespace Catan
             
         }
 
+        public Board(int nmPlayers)
+        {
+            this.nmPlayers = nmPlayers;
+            n = 19;
+            board = new Tile[]{
+                Tile.Empty,
+            Tile.Wheat, Tile.Wheat, Tile.Wheat, Tile.Wheat,
+            Tile.Wool, Tile.Wool, Tile.Wool, Tile.Wool,
+            Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
+            Tile.Stone,Tile.Stone, Tile.Stone,
+            Tile.Brick,Tile.Brick,Tile.Brick};
+            numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+            GenerateBoard();
+            housePositions = new int[n, 6];
+            roadsPositions = new int[n, 6];
+            allNodes = new Node[cntNodes];
+            for (int i = 0; i < cntNodes; i++) allNodes[i] = new Node();
+            allRoads = new Edge[cntRoads];
+            placeGraph = new PlaceGraph(cntNodes);
+            MakeNodeGraph();
+            GenerateHousePositions();
+            GenerateRoadsPositions();
 
+        }
         #region BoardFunctions
         private void MakeNodeGraph()
         {
