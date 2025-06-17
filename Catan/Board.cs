@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
-
     #region Polja
     public enum Space
     {
@@ -209,6 +208,24 @@ namespace Catan
         }
     }
 
+    public struct PlaceGraph
+    {
+        int n;
+        List<Edge>[] graph;
+        public PlaceGraph(int n)
+        {
+            this.n = n;
+            graph = new List<Edge>[n];
+            for (int i = 0; i < n; i++) graph[i] = new List<Edge>();
+        }
+
+        public void AddEgde(int a, int b, Edge edge)
+        {
+            graph[a].Add(edge);
+            graph[b].Add(edge);
+        }
+    }
+
     #endregion
 
 
@@ -218,7 +235,17 @@ namespace Catan
         public abstract void Execute(Board board, Player player);
     }
 
-    public class PlaceMove : Move
+    public class PlaceHouse : Move
+    {
+        int targetSpaceId;
+        Space targetSpace;
+        public override void Execute(Board board, Player player)
+        {
+
+        }
+    }
+
+    public class PlaceRoad : Move
     {
         int targetSpaceId;
         Space targetSpace;
@@ -264,10 +291,42 @@ namespace Catan
         public Node() {
             Owner = null;
             Type = Space.Empty;
+            isAvailable = new HashSet<int>();
         }
+
+        private HashSet<int> isAvailable;
+
+        public bool CanPlace(int playerId)
+        {
+            return isAvailable.Contains(playerId);
+        }
+
         public Player? Owner { get; private set; }
         public Space Type { get; private set; }
 
+        public void SetOwner(Player player) { Owner = player; }
+        public void SetType(Space type) { Type = type; }
+    }
+
+    public class Edge
+    {
+        Node nod1;
+        Node nod2;
+
+        public Edge(Node n1, Node n2)
+        {
+            Owner = null;
+            Type = Space.Empty;
+            isAvailable = new HashSet<int>();
+        }
+        public bool CanPlace(int playerId)
+        {
+            return isAvailable.Contains(playerId);
+        }
+
+        private HashSet<int> isAvailable;
+        public Player? Owner { get; private set; }
+        public Space Type { get; private set; }
         public void SetOwner(Player player) { Owner = player; }
         public void SetType(Space type) { Type = type; }
     }
@@ -275,14 +334,15 @@ namespace Catan
     {
         int n = 19;
         int cntNodes = 54;
-        int cntRoads = 71;
+        int cntRoads = 72;
         public Tile[] board;
         public int[] numbers;
         Graph boardGraph;
+        PlaceGraph placeGraph;
         public int[,] housePositions;
         public int[,] roadsPositions;
         public Node[] allNodes;
-        public Node[] allRoads;
+        public Edge[] allRoads;
 
         public Board() {
             n = 19;
@@ -299,16 +359,57 @@ namespace Catan
             roadsPositions = new int[n,6];
             allNodes = new Node[cntNodes];
             for(int i=0; i<cntNodes; i++) allNodes[i] = new Node();
-            allRoads = new Node[cntRoads];
-            for (int i = 0; i < cntRoads; i++) allRoads[i] = new Node();
+            allRoads = new Edge[cntRoads];
+            placeGraph = new PlaceGraph(cntNodes);
+            MakeNodeGraph();
             GenerateHousePositions();
             GenerateRoadsPositions();
             
-
         }
 
-        
 
+        #region BoardFunctions
+        private void MakeNodeGraph()
+        {
+            HorizontalEdges(0, 5, 0);
+            HorizontalEdges(10, 17, 7);
+            HorizontalEdges(23, 32, 16);
+            HorizontalEdges(39, 48, 27);
+            HorizontalEdges(54, 61, 38);
+            HorizontalEdges(66, 71, 47);
+            VerticalEdges(6, 9, 0, 8);
+            VerticalEdges(18, 22, 7, 10);
+            VerticalEdges(33, 38, 16, 11);
+            VerticalEdges(49, 53, 28, 10);
+            VerticalEdges(62, 65, 39, 8);
+        }
+
+        private void VerticalEdges(int a, int b, int start, int off)
+        {
+            for (int i = a; i <= b; i++)
+            {
+                allRoads[i] = new Edge(allNodes[start], allNodes[start + off]);
+                placeGraph.AddEgde(start, start+ off, allRoads[i]);
+                start += 2;
+            }
+        }
+
+        private void HorizontalEdges(int a, int b, int start)
+        {
+            for(int i=a; i<=b; i++)
+            {
+                allRoads[i] = new Edge(allNodes[start], allNodes[start+1]);
+                placeGraph.AddEgde(start,start+1,allRoads[i]);
+                start++;
+            }
+        }
+        public List<Node> AvailableHouseMovesBegining(Player player)
+        {
+            List<Node> result = new List<Node>();
+            for(int i=0; i<cntNodes; i++) if (allNodes[i].CanPlace(player.Id))result.Add(allNodes[i]);
+            return result;
+        }
+        
         public int Roll()
         {
             throw new NotImplementedException();
@@ -320,7 +421,7 @@ namespace Catan
             return -1;
         }
 
-        
+        #endregion
 
         #region BoardGeneration
         private void GenerateBoard()
@@ -372,7 +473,7 @@ namespace Catan
             GenerateRoadsPositionsRow(3, 6,10, 18, 14);
             GenerateRoadsPositionsRow(7, 11,23, 33, 16);
             GenerateRoadsPositionsRow(12, 15,40, 49, 14);
-            GenerateRoadsPositionsRow(16, 18,55, 61, 10);
+            GenerateRoadsPositionsRow(16, 18,55, 61, 11);
         }
 
         private void GenerateRoadsPositionsRow(int a, int b, int first, int mid, int off)
@@ -386,8 +487,6 @@ namespace Catan
                 roadsPositions[i, poz++] = ++mid;
                 roadsPositions[i, poz++] = first;
                 roadsPositions[i, poz++] = first++ + off;
-
-
             }
         }
 
