@@ -253,13 +253,7 @@ namespace Catan
         public int[] numbers = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
         Graph boardGraph;
 
-        public void GenerateBoard()
-        {
-            GenerateTiles();
-            boardGraph = new Graph(n, numbers, FindEmpty());
-            AddAllEdges();
-            GenerateNumbers();
-        }
+        
 
         public int Roll()
         {
@@ -270,6 +264,15 @@ namespace Catan
         {
             for (int i = 0; i < n; i++) if (board[i] == Tile.Empty) return i;
             return -1;
+        }
+
+        #region BoardGeneration
+        public void GenerateBoard()
+        {
+            GenerateTiles();
+            boardGraph = new Graph(n, numbers, FindEmpty());
+            AddAllEdges();
+            GenerateNumbers();
         }
 
         private void AddRow(int a, int b, int x)
@@ -307,6 +310,6 @@ namespace Catan
         {
             numbers = boardGraph.GenerateNumberPermutation();
         }
-
+        #endregion
     }
 }
