@@ -31,7 +31,9 @@ namespace Catan
         {
             while(GetGameState() == GameState.Active)
             {
-                int diceNumber = board.Roll();
+                int diceNumber, dice1, dice2;
+                    (dice1, dice2) = board.Roll();
+                diceNumber = dice1+dice2;   
 
                 if(diceNumber == 7)
                 {

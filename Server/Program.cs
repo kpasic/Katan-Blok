@@ -45,6 +45,13 @@ namespace Server
             Console.WriteLine();
             availableMoves = board.LegalRoadsMoves(player);
             foreach (int n in availableMoves) Console.Write("{0} ", n);
+            Console.WriteLine();
+            int[] niz = new int[13];
+            for(int i = 0;i<100; i++)
+            {
+                niz[board.Roll()]++;
+            }
+            foreach(int i in niz)Console.WriteLine(i);
         }
     }
 }

@@ -523,9 +523,13 @@ namespace Catan
             allNodes[nodeId].SetOwner(player);
         }
         
-        public int Roll()
+        public (int,int) Roll()
         {
-            throw new NotImplementedException();
+            Random dice = new Random();
+            int nm1 = dice.Next(1,7);
+            int nm2 = dice.Next(1,7);
+            return (nm1, nm2);
+            //throw new NotImplementedException();
         }
 
         private int FindEmpty()
