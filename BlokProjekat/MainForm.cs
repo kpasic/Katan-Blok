@@ -15,10 +15,11 @@ namespace ClientApp
 
         float gameScrollSpeed = 0.0005f;
 
-        Board tempBoard = new Board();
+        Board tempBoard;
 
         Dictionary<Tile, SolidBrush> colors;
         Dictionary<int, Point> HousePoints;
+        Dictionary<int, Point> RoadPoints;
         public MainForm()
         {
             InitializeComponent();
@@ -58,6 +59,10 @@ namespace ClientApp
             colors.Add(Tile.Wool, new SolidBrush(Color.LimeGreen));
             colors.Add(Tile.Brick, new SolidBrush (Color.OrangeRed));
             colors.Add(Tile.Stone, new SolidBrush(Color.DarkSlateGray));
+
+            //Points
+            HousePoints = new Dictionary<int, Point>();
+            RoadPoints = new Dictionary<int, Point>();
 
         }
 
@@ -148,7 +153,7 @@ namespace ClientApp
             return points;
         }
 
-        Point[] GetHexagonPoints(Point topLeft, float sideLength, bool pointy)
+        static Point[] GetHexagonPoints(Point topLeft, float sideLength, bool pointy)
         {
             Point[] points = new Point[6];
 
@@ -167,6 +172,14 @@ namespace ClientApp
             }
 
             return points;
+        }
+
+        static Point Lerp(Point A, Point B, float t)
+        {
+            Point C = new Point();
+            C.X = A.X + (int)((B.X - A.X) * t);
+            C.Y = A.Y + (int)((B.Y - A.Y) * t);
+            return C;
         }
 
         private void DrawGame(object sender, PaintEventArgs e)
@@ -202,18 +215,52 @@ namespace ClientApp
                     currentRow++;
                 }
                 sLeftOffset += lOffsets[currentRow] * cellSize / 2f;
-
-                for(int j = 0; j < tempBoard.housePositions.Length; j++)
-                {
-                    
-                }
-
                 int currentColumn = i;
                 if (currentRow != 0) currentColumn -= rowOffsets[currentRow - 1];
-                g.FillPolygon(colors[tempBoard.board[i]], GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize * MathF.Sqrt(3) / 8f) * (currentRow-2))), cellSize, true));
+
+                Point[] hexPoints = GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize * MathF.Sqrt(3) / 8f) * (currentRow - 2))), cellSize, true);
+
+                Debug.Write($"TILE {i}");
+               
+                HousePoints[tempBoard.housePositions[i, 0]] = hexPoints[4];
+                HousePoints[tempBoard.housePositions[i, 1]] = hexPoints[3];
+                HousePoints[tempBoard.housePositions[i, 2]] = hexPoints[5];
+                HousePoints[tempBoard.housePositions[i, 3]] = hexPoints[2];
+                HousePoints[tempBoard.housePositions[i, 4]] = hexPoints[0];
+                HousePoints[tempBoard.housePositions[i, 5]] = hexPoints[1];
+
+                RoadPoints[tempBoard.housePositions[i, 0]] = Lerp(hexPoints[4], hexPoints[5], 0.5f);
+                RoadPoints[tempBoard.housePositions[i, 1]] = Lerp(hexPoints[5], hexPoints[0], 0.5f);
+                RoadPoints[tempBoard.housePositions[i, 2]] = Lerp(hexPoints[3], hexPoints[4], 0.5f);
+                RoadPoints[tempBoard.housePositions[i, 3]] = Lerp(hexPoints[0], hexPoints[1], 0.5f);
+                RoadPoints[tempBoard.housePositions[i, 4]] = Lerp(hexPoints[2], hexPoints[3], 0.5f);
+                RoadPoints[tempBoard.housePositions[i, 5]] = Lerp(hexPoints[1], hexPoints[2], 0.5f);
+                
+             
+                Debug.WriteLine("");
+
+                float radius = cellSize / 5f;
+                //g.DrawEllipse(new Pen(Color.Red), hexPoints[0].X - radius, hexPoints[0].Y - radius, radius * 2, radius * 2);
+                //g.DrawEllipse(new Pen(Color.Green), hexPoints[1].X - radius, hexPoints[1].Y - radius, radius * 2, radius * 2);
+
+
+                g.FillPolygon(colors[tempBoard.board[i]], hexPoints);
                 g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize*MathF.Sqrt(3)/8f) * (currentRow-2)), (int)cellSize, (int)cellSize));
             }
 
+
+
+            foreach (int ind in HousePoints.Keys)
+            {
+                float radius = cellSize / 5f;
+                g.DrawEllipse(new Pen(Color.Blue), HousePoints[ind].X - radius, HousePoints[ind].Y - radius, radius*2, radius*2);
+            }
+
+            foreach (Point po in RoadPoints.Values)
+            {
+                float radius = cellSize / 5f;
+                g.DrawEllipse(new Pen(Color.Red), po.X - radius, po.Y - radius, radius * 2, radius*2);
+            }
         }
     }
 }

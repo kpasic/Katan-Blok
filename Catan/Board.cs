@@ -290,7 +290,7 @@ namespace Catan
             Owner = null;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
-            for(int i=0; i<nmPlayers; i++)isAvailable.Add(i);
+            //for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
         }
 
         private HashSet<int> isAvailable;
