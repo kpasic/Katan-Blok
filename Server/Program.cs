@@ -41,6 +41,9 @@ namespace Server
             board.PlaceHouse(availableMoves[0],player, Space.Empty);
             availableMoves = board.LegalHouseMovesBegining(player);
             foreach(int n in availableMoves)Console.Write("{0} ",n);
+            Console.WriteLine();
+            availableMoves = board.LegalRoadsMoves(player);
+            foreach (int n in availableMoves) Console.Write("{0} ", n);
         }
     }
 }

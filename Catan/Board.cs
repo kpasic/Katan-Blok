@@ -225,14 +225,22 @@ namespace Catan
             graph[b].Add(edge);
         }
 
-        public HashSet<int> AddAdjecent(int a)
+        public HashSet<int> AdjecentNodes(int node)
         {
             HashSet<int> adj = new HashSet<int> ();
-            foreach(Edge n in graph[a])
+            foreach(Edge n in graph[node])
             {
                 adj.Add(n.nod1.nodeIndex);
                 adj.Add(n.nod2.nodeIndex);
             }
+            return adj;
+        }
+
+
+        public HashSet<int> AdjecentEdges(int node)
+        {
+            HashSet<int> adj = new HashSet<int>();
+            foreach (Edge n in graph[node]) adj.Add(n.edgeId);
             return adj;
         }
     }
@@ -247,6 +255,16 @@ namespace Catan
     }
 
     public class HouseMove : Move
+    {
+        int nodeId;
+        Space nodeSpace;
+        public override void Execute(Board board, Player player)
+        {
+            board.PlaceHouse(nodeId, player, nodeSpace);
+        }
+    }
+
+    public class FirstMove : Move
     {
         int nodeId;
         Space nodeSpace;
@@ -302,7 +320,7 @@ namespace Catan
             nodeIndex = index;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
-            //for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
+            for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
         }
 
         private HashSet<int> isAvailable;
@@ -316,18 +334,26 @@ namespace Catan
         public Player? Owner { get; private set; }
         public Space Type { get; private set; }
 
-        public void SetOwner(Player? player) { Owner = player; }
+        public void SetOwner(Player? player)
+        {
+            Owner = player;
+            isAvailable.Clear();
+        }
         public void SetType(Space type) { Type = type; }
     }
 
     public class Edge
     {
+        public int edgeId;
         public Node nod1;
         public Node nod2;
 
-        public Edge(Node n1, Node n2)
+        public Edge(Node n1, Node n2, int id)
         {
+            edgeId = id;
             Owner = null;
+            nod1 = n1;
+            nod2 = n2;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
         }
@@ -336,13 +362,21 @@ namespace Catan
             return isAvailable.Contains(playerId);
         }
 
+        public void Add(int x)
+        {
+            isAvailable.Add(x);
+        }
+
         private HashSet<int> isAvailable;
         public Player? Owner { get; private set; }
         public Space Type { get; private set; }
+
+        
         public void SetOwner(Player player) 
         {
             Owner = player;
             isAvailable.Clear();
+            
         }
         public void SetType(Space type) { Type = type; }
     }
@@ -409,7 +443,38 @@ namespace Catan
             GenerateRoadsPositions();
 
         }
+
+        #region LegalMoves
+        public List<int> LegalHouseMovesBegining(Player player)
+        {
+            List<int> result = new List<int>();
+            for (int i = 0; i < cntNodes; i++) if (allNodes[i].CanPlace(player.Id)) result.Add(allNodes[i].nodeIndex);
+            return result;
+        }
+
+        public List<int> LegalRoadsMoves(Player player)
+        {
+            List<int> result = new List<int>();
+            for (int i = 0; i < cntRoads; i++) if (allRoads[i].CanPlace(player.Id))result.Add(i);
+            return result;
+        }
+
+        public List<int> LegalAdjecentRoadMoves(Player player, int nodeId)
+        {
+            List<int> result = new List<int>();
+            foreach(int n in placeGraph.AdjecentEdges(nodeId)) if (allRoads[n].CanPlace(player.Id)) result.Add(n);
+            return result;
+        }
+        #endregion
         #region BoardFunctions
+
+        public void AddEdges(int node, int playerId)
+        {
+            foreach(int e in placeGraph.AdjecentEdges(node))
+            {
+                if (allRoads[e].Owner == null) allRoads[e].Add(playerId);
+            }
+        }
         private void MakeNodeGraph()
         {
             HorizontalEdges(0, 5, 0);
@@ -429,7 +494,7 @@ namespace Catan
         {
             for (int i = a; i <= b; i++)
             {
-                allRoads[i] = new Edge(allNodes[start], allNodes[start + off]);
+                allRoads[i] = new Edge(allNodes[start], allNodes[start + off], i);
                 placeGraph.AddEgde(start, start+ off, allRoads[i]);
                 start += 2;
             }
@@ -439,27 +504,23 @@ namespace Catan
         {
             for(int i=a; i<=b; i++)
             {
-                allRoads[i] = new Edge(allNodes[start], allNodes[start+1]);
+                allRoads[i] = new Edge(allNodes[start], allNodes[start+1], i);
                 placeGraph.AddEgde(start,start+1,allRoads[i]);
                 start++;
             }
         }
-        public List<int> LegalHouseMovesBegining(Player player)
-        {
-            List<int> result = new List<int>();
-            for(int i=0; i<cntNodes; i++) if (allNodes[i].CanPlace(player.Id))result.Add(allNodes[i].nodeIndex);
-            return result;
-        }
+        
 
         public void PlaceHouse(int nodeId, Player player, Space nodeSpace)
         {
-            allNodes[nodeId].SetType(nodeSpace);
-            allNodes[nodeId].SetOwner(player);
-            HashSet<int> adj = placeGraph.AddAdjecent(nodeId);
+            HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
+            AddEdges(nodeId, player.Id);
             foreach(int i in adj)
             {
                 allNodes[i].SetOwner(null);
             }
+            allNodes[nodeId].SetType(nodeSpace);
+            allNodes[nodeId].SetOwner(player);
         }
         
         public int Roll()
