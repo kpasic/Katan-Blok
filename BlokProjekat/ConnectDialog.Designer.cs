@@ -31,6 +31,7 @@
             btnConnect = new Button();
             txtIp = new TextBox();
             txtPort = new TextBox();
+            txtUserName = new TextBox();
             SuspendLayout();
             // 
             // btnConnect
@@ -58,14 +59,23 @@
             txtPort.Location = new Point(12, 59);
             txtPort.Name = "txtPort";
             txtPort.PlaceholderText = "Port";
-            txtPort.Size = new Size(100, 23);
+            txtPort.Size = new Size(74, 23);
             txtPort.TabIndex = 2;
+            // 
+            // txtUserName
+            // 
+            txtUserName.Location = new Point(103, 59);
+            txtUserName.Name = "txtUserName";
+            txtUserName.PlaceholderText = "User Name";
+            txtUserName.Size = new Size(139, 23);
+            txtUserName.TabIndex = 3;
             // 
             // ConnectDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(409, 111);
+            Controls.Add(txtUserName);
             Controls.Add(txtPort);
             Controls.Add(txtIp);
             Controls.Add(btnConnect);
@@ -82,5 +92,6 @@
         private Button btnConnect;
         private TextBox txtIp;
         private TextBox txtPort;
+        private TextBox txtUserName;
     }
 }

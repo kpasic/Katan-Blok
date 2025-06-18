@@ -15,11 +15,15 @@ namespace ClientApp
 
         float gameScrollSpeed = 0.0005f;
 
+        static float interactRadius = 5f;
+
         Board tempBoard;
 
         Dictionary<Tile, SolidBrush> colors;
         Dictionary<int, Point> HousePoints;
         Dictionary<int, Point> RoadPoints;
+
+        bool placingHouse, placingRoad, upgradingHouse;
         public MainForm()
         {
             InitializeComponent();
@@ -64,11 +68,33 @@ namespace ClientApp
             HousePoints = new Dictionary<int, Point>();
             RoadPoints = new Dictionary<int, Point>();
 
+            //Controls
+            btnBuildHouse.Enabled = false;
+            btnBuildRoad.Enabled = false;
+
+        }
+
+        private float SqrDistance(Point a, Point b)
+        {
+            return ((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        }
+
+        private int? CollidePoints(Point p, Dictionary<int, Point> dict)
+        {
+            foreach (int ind in dict.Keys)
+            {
+                if (SqrDistance(p, dict[ind]) <= interactRadius * interactRadius)
+                {
+                    return ind;
+                }
+            }
+            return null;
         }
 
         private void OnMoveRequested(HumanPlayer player)
         {
-            //curGame.board.GetLegalMoves();
+            btnBuildHouse.Enabled = true;
+            btnBuildRoad.Enabled = true;
             //PlaceMove place = new PlaceMove();
 
             //player.SubmitMove(place);
@@ -92,7 +118,8 @@ namespace ClientApp
             {
                 if (dg.ShowDialog() == DialogResult.OK)
                 {
-                    await client.ConnectAsync(dg.ip, dg.port);
+                    CMessage msg = await client.ConnectAsync(dg.ip, dg.port, dg.username);
+                    //if(msg.Type ==)
                 }
                 else
                 {
@@ -102,6 +129,7 @@ namespace ClientApp
 
         }
 
+        #region drawing
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -194,13 +222,13 @@ namespace ClientApp
 
             SolidBrush p = new SolidBrush(Color.CadetBlue);
             g.FillPolygon(p, GetHexagonPoints(new Point((int)(leftMargin), (int)(topMargin)), Size, false));
-            g.DrawRectangle(new Pen(Color.Red), (int)leftMargin, (int)topMargin, (int)Size, (int)Size);
+            //g.DrawRectangle(new Pen(Color.Red), (int)leftMargin, (int)topMargin, (int)Size, (int)Size);
             float cellScale = 1 / 5.5f;
             float cellSize = Size * cellScale;
 
 
             float MidLeftOffset = leftMargin + cellSize/4f; //+ Size*MathF.Sqrt(3)/16f;
-            float sTopOffset = Size / 2f + (cellSize - cellSize * MathF.Sqrt(3) / 8f)/4f;
+            float sTopOffset = topMargin + Size / 2.6f + (cellSize - cellSize * MathF.Sqrt(3) / 8f)/8f;
 
             //Debug.WriteLine($"kys {sTopOffset + 2.5f * (cellSize - cellSize * MathF.Sqrt(3) / 8f) - topMargin - Size/2f}");
 
@@ -220,7 +248,7 @@ namespace ClientApp
 
                 Point[] hexPoints = GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize * MathF.Sqrt(3) / 8f) * (currentRow - 2))), cellSize, true);
 
-                Debug.Write($"TILE {i}");
+                //Debug.Write($"TILE {i}");
                
                 HousePoints[tempBoard.housePositions[i, 0]] = hexPoints[4];
                 HousePoints[tempBoard.housePositions[i, 1]] = hexPoints[3];
@@ -245,7 +273,7 @@ namespace ClientApp
 
 
                 g.FillPolygon(colors[tempBoard.board[i]], hexPoints);
-                g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize*MathF.Sqrt(3)/8f) * (currentRow-2)), (int)cellSize, (int)cellSize));
+                //g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize*MathF.Sqrt(3)/8f) * (currentRow-2)), (int)cellSize, (int)cellSize));
             }
 
 
@@ -253,14 +281,15 @@ namespace ClientApp
             foreach (int ind in HousePoints.Keys)
             {
                 float radius = cellSize / 5f;
-                g.DrawEllipse(new Pen(Color.Blue), HousePoints[ind].X - radius, HousePoints[ind].Y - radius, radius*2, radius*2);
+                //g.DrawEllipse(new Pen(Color.Blue), HousePoints[ind].X - radius, HousePoints[ind].Y - radius, radius*2, radius*2);
             }
-
+            
             foreach (Point po in RoadPoints.Values)
             {
                 float radius = cellSize / 5f;
-                g.DrawEllipse(new Pen(Color.Red), po.X - radius, po.Y - radius, radius * 2, radius*2);
+                //g.DrawEllipse(new Pen(Color.Red), po.X - radius, po.Y - radius, radius * 2, radius*2);
             }
         }
+        #endregion
     }
 }
