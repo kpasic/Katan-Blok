@@ -650,6 +650,7 @@ namespace Catan
             allNodes[nodeId].SetType(nodeSpace);
             allNodes[nodeId].SetOwner(player);
             allNodes[nodeId].SetState(false);
+            player.ChangePoints(1);
         }
 
 
@@ -674,6 +675,7 @@ namespace Catan
         public void UpgradeHouse(int nodeId,  IPlayer player)
         {
             allNodes[nodeId].SetType(Space.City);
+            player.ChangePoints(1);
         }
 
         #endregion

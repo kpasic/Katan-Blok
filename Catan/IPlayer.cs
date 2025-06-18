@@ -19,7 +19,7 @@ namespace Catan
     {
         public string Name { get; }
         public int Id { get; }
-        public int Points {  get; }
+        public int Points { get; set; }
         public  Dictionary<Resources, int> resources { get; set; }
 
         public Resources Rob()
@@ -39,6 +39,11 @@ namespace Catan
         {
             if(resources.ContainsKey(resource))resources[resource]++;
             else resources[resource] = 1;
+        }
+
+        public void ChangePoints(int x)
+        {
+            Points += x;
         }
 
         public int ResourcesCount { get; }
