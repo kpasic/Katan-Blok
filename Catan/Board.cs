@@ -101,7 +101,7 @@ namespace Catan
         int []susedi = {1, 2, 6, 7, 3,4,5,8,9,10,11,15,16,12,13,14,17,18,18};
         List<int>[] graph;
         MultiSet<int> allNumbers;
-        int[] numberpermutation;
+        public int[] numberpermutation;
         bool[] visited;
         public Graph(int n)
         {
@@ -181,6 +181,7 @@ namespace Catan
             
 
         }
+
 
         private bool checkValid68(int a, int b)
         {
@@ -314,15 +315,16 @@ namespace Catan
 
     public class Node
     {
-
         public Node(int nmPlayers, int index) {
             Owner = null;
+            state = true;
             nodeIndex = index;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
             for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
         }
 
+        public bool state;
         private HashSet<int> isAvailable;
         public int nodeIndex;
 
@@ -338,6 +340,21 @@ namespace Catan
         {
             Owner = player;
             isAvailable.Clear();
+        }
+
+        public void SetState(bool state)
+        {
+            this.state = state;
+        }
+
+        public void Add(int x)
+        {
+            isAvailable.Add(x);
+        }
+
+        public void Remove(int x)
+        {
+            isAvailable.Remove(x);
         }
         public void SetType(Space type) { Type = type; }
     }
@@ -382,6 +399,7 @@ namespace Catan
     }
     public class Board
     {
+        int robberPosition;
         int n = 19;
         int cntNodes = 54;
         int cntRoads = 72;
@@ -395,6 +413,7 @@ namespace Catan
         public Edge[] allRoads;
         int nmPlayers;
 
+        #region BoardConstructor
         public Board() {
             nmPlayers = 0;
             n = 19;
@@ -406,6 +425,7 @@ namespace Catan
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+            robberPosition = FindEmpty();
             GenerateBoard();
             housePositions = new int[n,6];
             roadsPositions = new int[n,6];
@@ -430,6 +450,7 @@ namespace Catan
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
+            robberPosition = FindEmpty();
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
             GenerateBoard();
             housePositions = new int[n, 6];
@@ -443,6 +464,8 @@ namespace Catan
             GenerateRoadsPositions();
 
         }
+
+        #endregion
 
         #region LegalMoves
         public List<int> LegalHouseMovesBegining(Player player)
@@ -473,9 +496,10 @@ namespace Catan
             return result;
         }
         #endregion
+
         #region BoardFunctions
 
-        public void AddEdges(int node, int playerId)
+        public void AddRoads(int node, int playerId)
         {
             foreach(int e in placeGraph.AdjecentEdges(node))
             {
@@ -521,13 +545,26 @@ namespace Catan
         public void PlaceHouse(int nodeId, Player player, Space nodeSpace)
         {
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
-            AddEdges(nodeId, player.Id);
+            AddRoads(nodeId, player.Id);
             foreach(int i in adj)
             {
                 allNodes[i].SetOwner(null);
+                allNodes[i].SetState(false);
             }
             allNodes[nodeId].SetType(nodeSpace);
             allNodes[nodeId].SetOwner(player);
+            allNodes[nodeId].SetState(false);
+        }
+
+
+        public void PlaceRoad(int roadId, Player player, Space space)
+        {
+            HashSet<int> adj1 = placeGraph.AdjecentNodes(allRoads[roadId].nod1.nodeIndex);
+            HashSet<int> adj2 = placeGraph.AdjecentNodes(allRoads[roadId].nod2.nodeIndex);
+            foreach(int i in adj1)if (allNodes[i].state) allNodes[i].Add(player.Id);
+            foreach (int i in adj2) if (allNodes[i].state) allNodes[i].Add(player.Id);
+            allRoads[roadId].SetType(space);
+            allRoads[roadId].SetOwner(player);
         }
         
         public (int,int) Roll()
@@ -535,8 +572,30 @@ namespace Catan
             Random dice = new Random();
             int nm1 = dice.Next(1,7);
             int nm2 = dice.Next(1,7);
+            DistributeResources(nm1 + nm2);
             return (nm1, nm2);
             //throw new NotImplementedException();
+        }
+
+        public void DistributeResources(int nm)
+        {
+            for(int i=0; i <n; i++)
+            {
+                if (numbers[i] == nm)
+                {
+                    for(int j=0; j<6; j++)
+                    {
+                        Node node = allNodes[housePositions[i, j]];
+                        if (node.Owner != null)GiveResource(node.Owner, board[i], (node.Type == Space.House) ? 1 : 2);
+                    }
+                }
+            }
+        }
+
+        private void GiveResource(Player player, Tile resoursce, int nm)
+        {
+            // player.GiveResource
+            // player.GiveResource
         }
 
         private int FindEmpty()
@@ -551,9 +610,10 @@ namespace Catan
         private void GenerateBoard()
         {
             GenerateTiles();
-            boardGraph = new Graph(n, numbers, FindEmpty());
+            boardGraph = new Graph(n, numbers, robberPosition);
             AddAllEdges();
             GenerateNumbers();
+            numbers = boardGraph.numberpermutation;
         }
 
         private void AddRow(int a, int b, int x)
