@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
@@ -277,9 +278,10 @@ namespace Catan
 
     public class RoadMove : Move
     {
-        public override void Execute(Board board, IPlayer player)
+        int roadId;
+        public override void Execute(Board board, Player player)
         {
-            throw new NotImplementedException();
+            board.PlaceRoad(roadId, player, Space.Road);
         }
     }
 
@@ -293,17 +295,20 @@ namespace Catan
 
     public class RobberMove : Move
     {
-        public override void Execute(Board board, IPlayer player)
+        int tileId;
+        Player RobberPlayer;
+        public override void Execute(Board board, Player player)
         {
-            throw new NotImplementedException();
+            board.MoveRobber(tileId, player, RobberPlayer);
         }
     }
 
     public class UpgradeMove : Move
     {
-        public override void Execute(Board board, IPlayer player)
+        int nodeId;
+        public override void Execute(Board board, Player player)
         {
-            throw new NotImplementedException();
+            board.UpgradeHouse(nodeId, player);
         }
     }
 
@@ -495,6 +500,29 @@ namespace Catan
             foreach(int n in placeGraph.AdjecentEdges(nodeId)) if (allRoads[n].CanPlace(player.Id)) result.Add(n);
             return result;
         }
+
+        /*
+        public List<int> LegalRobberMoves()
+        {
+            List<int> results = new List<int>();
+            for (int i = 0; i < n; i++)
+            {
+                bool valid = true;
+                for (int j = 0; j < 6; i++)
+                {
+                    Node node = allNodes[housePositions[i, j]];
+                    if (node.Owner == null) continue;
+                    if (node.Owner.Points == 2)
+                    {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) results.Add(i);
+            }
+            return results;
+        }
+        */
         #endregion
 
         #region BoardFunctions
@@ -540,9 +568,49 @@ namespace Catan
                 start++;
             }
         }
-        
 
-        public void PlaceHouse(int nodeId, IPlayer player, Space nodeSpace)
+        public (int, int) Roll()
+        {
+            Random dice = new Random();
+            int nm1 = dice.Next(1, 7);
+            int nm2 = dice.Next(1, 7);
+            DistributeResources(nm1 + nm2);
+            return (nm1, nm2);
+            //throw new NotImplementedException();
+        }
+
+        public void DistributeResources(int nm)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                if (numbers[i] == nm)
+                {
+                    if (robberPosition == i) continue;
+                    for (int j = 0; j < 6; j++)
+                    {
+                        Node node = allNodes[housePositions[i, j]];
+                        if (node.Owner != null) GiveResource(node.Owner, board[i], (node.Type == Space.House) ? 1 : 2);
+                    }
+                }
+            }
+        }
+
+        private void GiveResource(Player player, Tile resoursce, int nm)
+        {
+            //for(int i = 0; i < nm; i++) player.Give(resoursce);
+
+        }
+
+        private int FindEmpty()
+        {
+            for (int i = 0; i < n; i++) if (board[i] == Tile.Empty) return i;
+            return -1;
+        }
+
+        #endregion
+
+        #region BoardMoves
+        public void PlaceHouse(int nodeId, Player player, Space nodeSpace)
         {
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
             AddRoads(nodeId, player.Id);
@@ -566,45 +634,23 @@ namespace Catan
             allRoads[roadId].SetType(space);
             allRoads[roadId].SetOwner(player);
         }
-        
-        public (int,int) Roll()
+
+        public void MoveRobber(int tileId, Player player, Player robing)
         {
-            Random dice = new Random();
-            int nm1 = dice.Next(1,7);
-            int nm2 = dice.Next(1,7);
-            DistributeResources(nm1 + nm2);
-            return (nm1, nm2);
-            //throw new NotImplementedException();
+            robberPosition = tileId;
+            //Tile tile = robing.Rob();
+            //player.Give(tile)
+
         }
 
-        public void DistributeResources(int nm)
+        public void UpgradeHouse(int nodeId,  Player player)
         {
-            for(int i=0; i <n; i++)
-            {
-                if (numbers[i] == nm)
-                {
-                    for(int j=0; j<6; j++)
-                    {
-                        Node node = allNodes[housePositions[i, j]];
-                        if (node.Owner != null)GiveResource(node.Owner, board[i], (node.Type == Space.House) ? 1 : 2);
-                    }
-                }
-            }
-        }
-
-        private void GiveResource(IPlayer player, Tile resoursce, int nm)
-        {
-            // player.GiveResource
-            // player.GiveResource
-        }
-
-        private int FindEmpty()
-        {
-            for (int i = 0; i < n; i++) if (board[i] == Tile.Empty) return i;
-            return -1;
+            allNodes[nodeId].SetType(Space.City);
         }
 
         #endregion
+
+        
 
         #region BoardGeneration
         private void GenerateBoard()
@@ -686,7 +732,6 @@ namespace Catan
 
         private void GenerateHousePositionsRow(int a, int b, int first, int off)
         {
-           
             for (int i = a; i <= b; i++)
             {
                 int poz = 0;
