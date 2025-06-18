@@ -11,6 +11,7 @@ namespace Catan
     
         public string Name { get; }
         public int Id { get; }
+        public int Points { get; }
         public Dictionary<Resources, int> resources { get; set; }
         public StupidPlayer(string name, int id)
         {
