@@ -405,6 +405,7 @@ namespace Catan
     }
     public class Board
     {
+        #region Properties
         int robberPosition;
         int n = 19;
         int cntNodes = 54;
@@ -418,6 +419,7 @@ namespace Catan
         public Node[] allNodes;
         public Edge[] allRoads;
         int nmPlayers;
+        #endregion
 
         #region BoardConstructor
         public Board() {
@@ -679,8 +681,6 @@ namespace Catan
         }
 
         #endregion
-
-        
 
         #region BoardGeneration
         private void GenerateBoard()
