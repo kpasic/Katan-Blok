@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -404,6 +405,7 @@ namespace Catan
     }
     public class Board
     {
+        #region Properties
         int robberPosition;
         int n = 19;
         int cntNodes = 54;
@@ -417,6 +419,7 @@ namespace Catan
         public Node[] allNodes;
         public Edge[] allRoads;
         int nmPlayers;
+        #endregion
 
         #region BoardConstructor
         public Board() {
@@ -527,6 +530,26 @@ namespace Catan
 
         #region BoardFunctions
 
+        private void AddRow(int a, int b, int x)
+        {
+            for (int i = a; i <= b; i++) if (i != b) boardGraph.AddEdge(i, i + 1);
+            if (x == 0) return;
+            for (int i = a; i <= b; i++)
+            {
+                boardGraph.AddEdge(i, i + x);
+                boardGraph.AddEdge(i, i + x + 1);
+            }
+        }
+
+        private void AddAllEdges()
+        {
+            AddRow(0, 2, 3);
+            AddRow(3, 6, 4);
+            AddRow(7, 11, 0);
+            AddRow(12, 15, -5);
+            AddRow(16, 18, -4);
+        }
+
         public void AddRoads(int node, int playerId)
         {
             foreach(int e in placeGraph.AdjecentEdges(node))
@@ -589,16 +612,23 @@ namespace Catan
                     for (int j = 0; j < 6; j++)
                     {
                         Node node = allNodes[housePositions[i, j]];
-                        if (node.Owner != null) GiveResource(node.Owner, board[i], (node.Type == Space.House) ? 1 : 2);
+                        if (node.Owner != null) GiveResource(node.Owner, FindResources(board[i]), (node.Type == Space.House) ? 1 : 2);
                     }
                 }
             }
         }
 
-        private void GiveResource(IPlayer player, Tile resoursce, int nm)
+        Resources FindResources(Tile tile)
         {
-            //for(int i = 0; i < nm; i++) player.Give(resoursce);
+            int index = Array.IndexOf(Enum.GetValues(typeof(Tile)), tile);
+            Resources value = (Resources)Enum.GetValues(typeof(Resources)).GetValue(index);
+            return value;
 
+        }
+
+        private void GiveResource(IPlayer player, Resources resource, int nm)
+        {
+            for(int i = 0; i < nm; i++) player.Give(resource);
         }
 
         private int FindEmpty()
@@ -622,6 +652,7 @@ namespace Catan
             allNodes[nodeId].SetType(nodeSpace);
             allNodes[nodeId].SetOwner(player);
             allNodes[nodeId].SetState(false);
+            player.ChangePoints(1);
         }
 
 
@@ -638,19 +669,18 @@ namespace Catan
         public void MoveRobber(int tileId, IPlayer player, IPlayer robing)
         {
             robberPosition = tileId;
-            //Tile tile = robing.Rob();
-            //player.Give(tile)
+            Resources resources = robing.Rob();
+            player.Give(resources);
 
         }
 
         public void UpgradeHouse(int nodeId,  IPlayer player)
         {
             allNodes[nodeId].SetType(Space.City);
+            player.ChangePoints(1);
         }
 
         #endregion
-
-        
 
         #region BoardGeneration
         private void GenerateBoard()
@@ -662,25 +692,7 @@ namespace Catan
             numbers = boardGraph.numberpermutation;
         }
 
-        private void AddRow(int a, int b, int x)
-        {
-            for (int i = a; i <= b; i++) if (i != b) boardGraph.AddEdge(i, i + 1);
-            if (x == 0) return;
-            for (int i = a; i <= b; i++)
-            {
-                boardGraph.AddEdge(i, i + x);
-                boardGraph.AddEdge(i, i + x + 1);
-            }
-        }
-
-        private void AddAllEdges()
-        {
-            AddRow(0, 2, 3);
-            AddRow(3, 6, 4);
-            AddRow(7, 11, 0);
-            AddRow(12, 15, -5);
-            AddRow(16, 18, -4);
-        }
+        
 
         private void GenerateTiles()
         {

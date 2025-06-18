@@ -19,12 +19,20 @@ namespace Catan
     {
         public string Name { get; }
         public int Id { get; }
-        public int Points {  get; }
+        public int Points { get; set; }
         public  Dictionary<Resources, int> resources { get; set; }
 
         public Resources Rob()
         {
-
+            Random rng = new Random();
+            int index = rng.Next(ResourcesCount);
+            int rs = 0;
+            Resources[] list = (Resources[])Enum.GetValues(typeof(Resources));
+            while(index > 0)
+            {
+                index -= resources[list[rs++]];
+            }
+            return list[rs];
         }
 
         public void Give(Resources resource)
@@ -32,6 +40,8 @@ namespace Catan
             if(resources.ContainsKey(resource))resources[resource]++;
             else resources[resource] = 1;
         }
+
+        public void ChangePoints(int x);
 
         public int ResourcesCount { get; }
         public  Task<Move> GetMove();

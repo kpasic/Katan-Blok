@@ -16,6 +16,7 @@ namespace Catan
         public event Action<HumanPlayer> OnDiscardRequested;
         public string Name { get; }
         public int Id { get; set; }
+        public int Points { get; set; }
         public Dictionary<Resources, int> resources { get; set; }
         public HumanPlayer(string name, int id)
         {
@@ -35,6 +36,10 @@ namespace Catan
                 }
                 return count;
             }
+        }
+        public void ChangePoints(int x)
+        {
+            Points += x;
         }
 
         public Task<Move> GetMove()
