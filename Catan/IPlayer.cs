@@ -41,10 +41,7 @@ namespace Catan
             else resources[resource] = 1;
         }
 
-        public void ChangePoints(int x)
-        {
-            Points += x;
-        }
+        public void ChangePoints(int x);
 
         public int ResourcesCount { get; }
         public  Task<Move> GetMove();

@@ -11,7 +11,7 @@ namespace Catan
     
         public string Name { get; }
         public int Id { get; }
-        public int Points { get; }
+        public int Points { get; set; }
         public Dictionary<Resources, int> resources { get; set; }
         public StupidPlayer(string name, int id)
         {
@@ -31,6 +31,11 @@ namespace Catan
                 }
                 return count;
             }
+        }
+
+        public void ChangePoints(int x)
+        {
+            Points += x;
         }
 
         public Task<Move> GetMove()
