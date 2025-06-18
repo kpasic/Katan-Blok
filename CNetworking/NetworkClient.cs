@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text.Json;
 using Catan;
-namespace ClientApp
+namespace CNetworking
 {
     public class NetworkClient
     {

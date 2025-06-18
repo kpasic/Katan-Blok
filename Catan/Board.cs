@@ -252,14 +252,14 @@ namespace Catan
     #region Moves
     public abstract class Move
     {
-        public abstract void Execute(Board board, Player player);
+        public abstract void Execute(Board board, IPlayer player);
     }
 
     public class HouseMove : Move
     {
         int nodeId;
         Space nodeSpace;
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             board.PlaceHouse(nodeId, player, nodeSpace);
         }
@@ -269,7 +269,7 @@ namespace Catan
     {
         int nodeId;
         Space nodeSpace;
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             board.PlaceHouse(nodeId, player, nodeSpace);
         }
@@ -277,7 +277,7 @@ namespace Catan
 
     public class RoadMove : Move
     {
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             throw new NotImplementedException();
         }
@@ -285,7 +285,7 @@ namespace Catan
 
     public class TradeMove : Move
     {
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             throw new NotImplementedException();
         }
@@ -293,7 +293,7 @@ namespace Catan
 
     public class RobberMove : Move
     {
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             throw new NotImplementedException();
         }
@@ -301,7 +301,7 @@ namespace Catan
 
     public class UpgradeMove : Move
     {
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             throw new NotImplementedException();
         }
@@ -333,10 +333,10 @@ namespace Catan
             return isAvailable.Contains(playerId);
         }
 
-        public Player? Owner { get; private set; }
+        public IPlayer? Owner { get; private set; }
         public Space Type { get; private set; }
 
-        public void SetOwner(Player? player)
+        public void SetOwner(IPlayer? player)
         {
             Owner = player;
             isAvailable.Clear();
@@ -385,11 +385,11 @@ namespace Catan
         }
 
         private HashSet<int> isAvailable;
-        public Player? Owner { get; private set; }
+        public IPlayer? Owner { get; private set; }
         public Space Type { get; private set; }
 
         
-        public void SetOwner(Player player) 
+        public void SetOwner(IPlayer player) 
         {
             Owner = player;
             isAvailable.Clear();
@@ -468,28 +468,28 @@ namespace Catan
         #endregion
 
         #region LegalMoves
-        public List<int> LegalHouseMovesBegining(Player player)
+        public List<int> LegalHouseMovesBegining(IPlayer player)
         {
             List<int> result = new List<int>();
             for (int i = 0; i < cntNodes; i++) if (allNodes[i].CanPlace(player.Id)) result.Add(allNodes[i].nodeIndex);
             return result;
         }
 
-        public List<int> LegalUpgradeMoves(Player player)
+        public List<int> LegalUpgradeMoves(IPlayer player)
         {
             List<int> result = new List<int>();
             for (int i = 0; i < cntNodes; i++) if (allNodes[i].Owner == player) result.Add(allNodes[i].nodeIndex);
             return result;
         }
 
-        public List<int> LegalRoadsMoves(Player player)
+        public List<int> LegalRoadsMoves(IPlayer player)
         {
             List<int> result = new List<int>();
             for (int i = 0; i < cntRoads; i++) if (allRoads[i].CanPlace(player.Id))result.Add(i);
             return result;
         }
 
-        public List<int> LegalAdjecentRoadMoves(Player player, int nodeId)
+        public List<int> LegalAdjecentRoadMoves(IPlayer player, int nodeId)
         {
             List<int> result = new List<int>();
             foreach(int n in placeGraph.AdjecentEdges(nodeId)) if (allRoads[n].CanPlace(player.Id)) result.Add(n);
@@ -542,7 +542,7 @@ namespace Catan
         }
         
 
-        public void PlaceHouse(int nodeId, Player player, Space nodeSpace)
+        public void PlaceHouse(int nodeId, IPlayer player, Space nodeSpace)
         {
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
             AddRoads(nodeId, player.Id);
@@ -557,7 +557,7 @@ namespace Catan
         }
 
 
-        public void PlaceRoad(int roadId, Player player, Space space)
+        public void PlaceRoad(int roadId, IPlayer player, Space space)
         {
             HashSet<int> adj1 = placeGraph.AdjecentNodes(allRoads[roadId].nod1.nodeIndex);
             HashSet<int> adj2 = placeGraph.AdjecentNodes(allRoads[roadId].nod2.nodeIndex);
@@ -592,7 +592,7 @@ namespace Catan
             }
         }
 
-        private void GiveResource(Player player, Tile resoursce, int nm)
+        private void GiveResource(IPlayer player, Tile resoursce, int nm)
         {
             // player.GiveResource
             // player.GiveResource

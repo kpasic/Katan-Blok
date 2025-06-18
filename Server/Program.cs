@@ -11,7 +11,7 @@ namespace Server
             Console.WriteLine("test");
             Board board = new Board(4);
             Move move = new FirstMove();
-            Player player = new StupidPlayer("cigan", 1);
+            IPlayer player = new StupidPlayer("cigan", 1);
             //board.GenerateBoard();
             for(int i=0;i<19; i++)
             {

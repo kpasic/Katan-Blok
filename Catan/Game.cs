@@ -14,14 +14,14 @@ namespace Catan
     }
     public class Game
     {
-        private List<Player> players;
+        private List<IPlayer> players;
         public int currentPlayerIndex { get; private set; }
         public Board board { get; private set; }
         public int discardLimit {get; private set;}
         public int victoryPoints { get; private set; }
 
 
-        public Game(List<Player> players)
+        public Game(List<IPlayer> players)
         {
             this.players = players;
             Board board = new Board(players.Count);
@@ -37,7 +37,7 @@ namespace Catan
 
                 if(diceNumber == 7)
                 {
-                    foreach (Player player in players) {
+                    foreach (IPlayer player in players) {
                         if(player.ResourcesCount > discardLimit)
                         {
                             //await player.Discard();
@@ -45,7 +45,7 @@ namespace Catan
                     }
                 }
 
-                Player curPlayer = players[currentPlayerIndex];
+                IPlayer curPlayer = players[currentPlayerIndex];
                 Move move = await curPlayer.GetMove();
                 if (move != null)
                 {

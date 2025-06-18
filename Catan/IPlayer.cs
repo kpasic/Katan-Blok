@@ -15,7 +15,7 @@ namespace Catan
         Stone,
         Brick,
     }
-    public interface Player
+    public interface IPlayer
     {
         public string Name { get; }
         public int Id { get; }

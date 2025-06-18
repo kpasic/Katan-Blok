@@ -6,7 +6,7 @@ namespace ClientApp
     public partial class MainForm : Form
     {
 
-        private Game curGame;
+        
         NetworkClient client;
         Panel gamePanel;
         float gameScale = 0.8f;

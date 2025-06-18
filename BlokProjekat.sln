@@ -5,11 +5,13 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientApp", "BlokProjekat\ClientApp.csproj", "{278317C5-3DFF-48D0-9EBB-64B93554F087}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{5D8E08ED-BAD8-43ED-A8B4-2095E99A9FFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{5D8E08ED-BAD8-43ED-A8B4-2095E99A9FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catan", "Catan\Catan.csproj", "{4680F9D4-2D8A-4000-BE65-4610DBDDE024}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catan", "Catan\Catan.csproj", "{4680F9D4-2D8A-4000-BE65-4610DBDDE024}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CServer", "CServer\CServer.csproj", "{CACAB187-BEC8-4EFC-8A7D-631D01436D31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CServer", "CServer\CServer.csproj", "{CACAB187-BEC8-4EFC-8A7D-631D01436D31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNetworking", "CNetworking\CNetworking.csproj", "{9D8D5499-A343-4EEF-937C-01F2546782B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CACAB187-BEC8-4EFC-8A7D-631D01436D31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D8D5499-A343-4EEF-937C-01F2546782B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D8D5499-A343-4EEF-937C-01F2546782B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D8D5499-A343-4EEF-937C-01F2546782B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D8D5499-A343-4EEF-937C-01F2546782B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

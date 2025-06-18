@@ -18,7 +18,7 @@ namespace RServer{
             listener.Start();
             Console.WriteLine("Server listening");
 
-            List<Player> players = new List<Player>();
+            List<IPlayer> players = new List<IPlayer>();
             while(players.Count < maxPlayers)
             {
                 Console.WriteLine("Waiting for connection...");
@@ -38,12 +38,12 @@ namespace RServer{
 
             Game game = new Game(players);
 
-            foreach (Player player in players)
+            foreach (IPlayer player in players)
             {
                 if (player is NetworkPlayer)
                 {
                     NetworkPlayer nPlayer = (NetworkPlayer)player;
-                    await nPlayer.SendGameState(game);
+                    await nPlayer.SendBoardState(game);
                 }
             }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
-    public class StupidPlayer : Player
+    public class StupidPlayer : IPlayer
     {
     
         public string Name { get; }

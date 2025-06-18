@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Catan;
 namespace Server
 {
-    internal class NetworkPlayer : Player
+    internal class NetworkPlayer : IPlayer
     {
         public TcpClient client;
         public NetworkStream stream;
@@ -15,7 +15,7 @@ namespace Server
 
         public string Name { get;}
         public int Id { get;}
-        Dictionary<Resources, int> Player.resources { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Dictionary<Resources, int> IPlayer.resources { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public int ResourcesCount => throw new NotImplementedException();
 
@@ -29,14 +29,30 @@ namespace Server
 
         public async Task<Move> GetMove()
         {
-            await NetworkUtils.SendObjectAsync(new CMessage(msgType.GetMove, null), stream);
+            await NetworkUtils.SendObjectAsync(new CMessage("GetMove", null), stream);
             return await NetworkUtils.ReceiveObjectAsync<Move>(stream);
         }
 
-        public async Task SendGameState(Game game)
+        public async Task<CMessage> Proccess(CMessage msg)
         {
-            await NetworkUtils.SendObjectAsync(new CMessage(msgType.GameState, game), stream);
+            switch (msg.Type)
+            {
+                case "GetMove":
+                    Move move = await GetMove();
+                    return new CMessage("Move", move);
+                case "BoardState":
+
+                    
+
+                default:
+                    throw new Exception($"Unrecognized CMessage type: {msg.Type}");
+            }
         }
+
+        public void Send(CMessage msg) {
+
+        }
+        
 
     }
 }

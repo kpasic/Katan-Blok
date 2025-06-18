@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
-    public class HumanPlayer : Player
+    public class HumanPlayer : IPlayer
     {
         private TaskCompletionSource<Move>? ui;
         private TaskCompletionSource<int[]>? ds;
