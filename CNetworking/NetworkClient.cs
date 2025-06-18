@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using System.Text.Json;
-using Catan;
+
 namespace CNetworking
 {
     public class NetworkClient

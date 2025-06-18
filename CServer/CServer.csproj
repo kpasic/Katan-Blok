@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Catan\Catan.csproj" />
+    <ProjectReference Include="..\CNetworking\CNetworking.csproj" />
   </ItemGroup>
 
 </Project>
