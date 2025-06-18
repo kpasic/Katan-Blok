@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Catan;
+using CNetworking;
 namespace Server
 {
     internal class NetworkPlayer : IPlayer
