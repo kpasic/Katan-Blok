@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 namespace CNetworking
 {
     public interface IMsgTransceiver
-    {
-        void Send(CMessage msg);
-
+    { 
         Task<CMessage> Proccess(CMessage msg);
     }
     public class CMessage

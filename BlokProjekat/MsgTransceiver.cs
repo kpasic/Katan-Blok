@@ -28,7 +28,7 @@ namespace ClientApp
                     Move reqMove = await player.GetMove();
                     return new CMessage("Move", reqMove);
                 case "BoardState":
-                    Board newBoard = msg.Payload as Board;
+                    Board newBoard = (Board)msg.Payload;
                     board.Clone(newBoard);
                     break;
                 case "Move":
@@ -44,6 +44,8 @@ namespace ClientApp
             }
             throw new Exception("???");
         }
+
+        
 
     }
 }
