@@ -9,8 +9,8 @@ namespace Server
 {
     internal class NetworkPlayer : Player
     {
-        private TcpClient client;
-        private NetworkStream stream;
+        public TcpClient client;
+        public NetworkStream stream;
         private Dictionary<Resources, int> resources;
 
         public string Name { get;}
@@ -29,7 +29,13 @@ namespace Server
 
         public async Task<Move> GetMove()
         {
+            await NetworkUtils.SendObjectAsync(new CMessage(msgType.GetMove, null), stream);
             return await NetworkUtils.ReceiveObjectAsync<Move>(stream);
+        }
+
+        public async Task SendGameState(Game game)
+        {
+            await NetworkUtils.SendObjectAsync(new CMessage(msgType.GameState, game), stream);
         }
 
     }

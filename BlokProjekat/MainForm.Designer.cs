@@ -31,8 +31,12 @@
             mainGrid = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
             btnConnectServer = new Button();
+            ActionsLayout = new TableLayoutPanel();
+            btnBuildHouse = new Button();
+            btnBuildRoad = new Button();
             mainGrid.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            ActionsLayout.SuspendLayout();
             SuspendLayout();
             // 
             // mainGrid
@@ -42,6 +46,7 @@
             mainGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
             mainGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
             mainGrid.Controls.Add(tableLayoutPanel2, 1, 0);
+            mainGrid.Controls.Add(ActionsLayout, 1, 1);
             mainGrid.Dock = DockStyle.Fill;
             mainGrid.Location = new Point(0, 0);
             mainGrid.Margin = new Padding(0);
@@ -69,13 +74,52 @@
             // 
             // btnConnectServer
             // 
+            btnConnectServer.Dock = DockStyle.Left;
             btnConnectServer.Location = new Point(3, 3);
             btnConnectServer.Name = "btnConnectServer";
-            btnConnectServer.Size = new Size(99, 59);
+            btnConnectServer.Size = new Size(99, 93);
             btnConnectServer.TabIndex = 0;
             btnConnectServer.Text = "Connect to server";
             btnConnectServer.UseVisualStyleBackColor = true;
             btnConnectServer.Click += btnConnectServer_Click;
+            // 
+            // ActionsLayout
+            // 
+            ActionsLayout.ColumnCount = 2;
+            ActionsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            ActionsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            ActionsLayout.Controls.Add(btnBuildHouse, 0, 0);
+            ActionsLayout.Controls.Add(btnBuildRoad, 1, 0);
+            ActionsLayout.Dock = DockStyle.Fill;
+            ActionsLayout.Location = new Point(538, 505);
+            ActionsLayout.Name = "ActionsLayout";
+            ActionsLayout.RowCount = 2;
+            ActionsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            ActionsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            ActionsLayout.Size = new Size(224, 120);
+            ActionsLayout.TabIndex = 1;
+            // 
+            // btnBuildHouse
+            // 
+            btnBuildHouse.Dock = DockStyle.Fill;
+            btnBuildHouse.Location = new Point(5, 5);
+            btnBuildHouse.Margin = new Padding(5);
+            btnBuildHouse.Name = "btnBuildHouse";
+            btnBuildHouse.Size = new Size(102, 50);
+            btnBuildHouse.TabIndex = 0;
+            btnBuildHouse.Text = "Build House";
+            btnBuildHouse.UseVisualStyleBackColor = true;
+            // 
+            // btnBuildRoad
+            // 
+            btnBuildRoad.Dock = DockStyle.Fill;
+            btnBuildRoad.Location = new Point(117, 5);
+            btnBuildRoad.Margin = new Padding(5);
+            btnBuildRoad.Name = "btnBuildRoad";
+            btnBuildRoad.Size = new Size(102, 50);
+            btnBuildRoad.TabIndex = 1;
+            btnBuildRoad.Text = "Build Road";
+            btnBuildRoad.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -83,11 +127,13 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(765, 628);
             Controls.Add(mainGrid);
+            DoubleBuffered = true;
             Name = "MainForm";
             Text = "Form1";
             Paint += MainForm_Paint;
             mainGrid.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
+            ActionsLayout.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -97,5 +143,8 @@
         private TableLayoutPanel mainGrid;
         private TableLayoutPanel tableLayoutPanel2;
         private Button btnConnectServer;
+        private TableLayoutPanel ActionsLayout;
+        private Button btnBuildHouse;
+        private Button btnBuildRoad;
     }
 }

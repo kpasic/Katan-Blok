@@ -26,13 +26,27 @@ namespace RServer{
                 NetworkStream stream = client.GetStream();
                 Console.WriteLine("Player Connected");
 
+
                 string name = await NetworkUtils.ReceiveObjectAsync<string>(stream);
 
                 NetworkPlayer newPlayer = new NetworkPlayer(client, stream, name, players.Count);
                 players.Add(newPlayer);
             }
+            
+
+
 
             Game game = new Game(players);
+
+            foreach (Player player in players)
+            {
+                if (player is NetworkPlayer)
+                {
+                    NetworkPlayer nPlayer = (NetworkPlayer)player;
+                    await nPlayer.SendGameState(game);
+                }
+            }
+
             await game.Update();
 
 

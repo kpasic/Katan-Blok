@@ -15,6 +15,7 @@ namespace ClientApp
     {
         public string ip;
         public int port;
+        public string username;
         public ConnectDialog()
         {
             InitializeComponent();
@@ -22,16 +23,18 @@ namespace ClientApp
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            if(IPAddress.TryParse(ip, out IPAddress? wht) == true)
+            if (IPAddress.TryParse(ip, out IPAddress? wht) == true && !string.IsNullOrEmpty(txtUserName.Text)) 
             {
                 ip = txtIp.Text;
                 port = int.Parse(txtPort.Text);
+                username = txtUserName.Text;
+
                 DialogResult = DialogResult.OK;
                 Close();
             }
             else
             {
-                MessageBox.Show("Nije dobar ip");
+                MessageBox.Show("Nije dobar ip ili nisi uneo ime");
             }
         }
     }

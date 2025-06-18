@@ -8,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
+    public enum msgType
+    {
+        Connect,
+        GameState,
+        GetMove,
+        Move,
+
+    }
+    public class CMessage
+    {
+        public msgType Type;
+        public object Payload;
+        public CMessage(msgType Type, object Payload)
+        {
+            this.Type = Type;
+            this.Payload = Payload;
+        }
+    }
     public class NetworkUtils
     {
         public static byte[] Serialize<T>(T obj)

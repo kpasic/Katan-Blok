@@ -55,5 +55,15 @@ namespace Catan
                 ui.SetResult(move);
             }
         }
+
+        public bool CanBuildHouse()
+        {
+            return resources[Resources.Wood] > 0 && resources[Resources.Wool] > 0 && resources[Resources.Wheat] > 0 && resources[Resources.Brick] > 0;
+        }
+
+        public bool CanBuildRoad()
+        {
+            return resources[Resources.Wood] > 0 && resources[Resources.Brick] > 0;
+        }
     }
 }
