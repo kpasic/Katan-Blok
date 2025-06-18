@@ -527,6 +527,26 @@ namespace Catan
 
         #region BoardFunctions
 
+        private void AddRow(int a, int b, int x)
+        {
+            for (int i = a; i <= b; i++) if (i != b) boardGraph.AddEdge(i, i + 1);
+            if (x == 0) return;
+            for (int i = a; i <= b; i++)
+            {
+                boardGraph.AddEdge(i, i + x);
+                boardGraph.AddEdge(i, i + x + 1);
+            }
+        }
+
+        private void AddAllEdges()
+        {
+            AddRow(0, 2, 3);
+            AddRow(3, 6, 4);
+            AddRow(7, 11, 0);
+            AddRow(12, 15, -5);
+            AddRow(16, 18, -4);
+        }
+
         public void AddRoads(int node, int playerId)
         {
             foreach(int e in placeGraph.AdjecentEdges(node))
@@ -662,25 +682,7 @@ namespace Catan
             numbers = boardGraph.numberpermutation;
         }
 
-        private void AddRow(int a, int b, int x)
-        {
-            for (int i = a; i <= b; i++) if (i != b) boardGraph.AddEdge(i, i + 1);
-            if (x == 0) return;
-            for (int i = a; i <= b; i++)
-            {
-                boardGraph.AddEdge(i, i + x);
-                boardGraph.AddEdge(i, i + x + 1);
-            }
-        }
-
-        private void AddAllEdges()
-        {
-            AddRow(0, 2, 3);
-            AddRow(3, 6, 4);
-            AddRow(7, 11, 0);
-            AddRow(12, 15, -5);
-            AddRow(16, 18, -4);
-        }
+        
 
         private void GenerateTiles()
         {
