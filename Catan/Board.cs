@@ -278,9 +278,10 @@ namespace Catan
 
     public class RoadMove : Move
     {
+        int roadId;
         public override void Execute(Board board, Player player)
         {
-            throw new NotImplementedException();
+            board.PlaceRoad(roadId, player, Space.Road);
         }
     }
 
@@ -294,17 +295,20 @@ namespace Catan
 
     public class RobberMove : Move
     {
+        int tileId;
+        Player RobberPlayer;
         public override void Execute(Board board, Player player)
         {
-            throw new NotImplementedException();
+            board.MoveRobber(tileId, player, RobberPlayer);
         }
     }
 
     public class UpgradeMove : Move
     {
+        int nodeId;
         public override void Execute(Board board, Player player)
         {
-            throw new NotImplementedException();
+            board.UpgradeHouse(nodeId, player);
         }
     }
 
@@ -497,7 +501,7 @@ namespace Catan
             return result;
         }
 
-
+        /*
         public List<int> LegalRobberMoves()
         {
             List<int> results = new List<int>();
@@ -518,6 +522,7 @@ namespace Catan
             }
             return results;
         }
+        */
         #endregion
 
         #region BoardFunctions
@@ -638,6 +643,11 @@ namespace Catan
 
         }
 
+        public void UpgradeHouse(int nodeId,  Player player)
+        {
+            allNodes[nodeId].SetType(Space.City);
+        }
+
         #endregion
 
         
@@ -722,7 +732,6 @@ namespace Catan
 
         private void GenerateHousePositionsRow(int a, int b, int first, int off)
         {
-           
             for (int i = a; i <= b; i++)
             {
                 int poz = 0;
