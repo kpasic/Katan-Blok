@@ -49,7 +49,8 @@ namespace Server
             int[] niz = new int[13];
             for(int i = 0;i<100; i++)
             {
-                niz[board.Roll()]++;
+                (int, int) a = board.Roll();
+                niz[a.Item1+a.Item2]++;
             }
             foreach(int i in niz)Console.WriteLine(i);
         }

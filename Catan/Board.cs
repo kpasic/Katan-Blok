@@ -399,6 +399,7 @@ namespace Catan
     }
     public class Board
     {
+        int robberPosition;
         int n = 19;
         int cntNodes = 54;
         int cntRoads = 72;
@@ -424,6 +425,7 @@ namespace Catan
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+            robberPosition = FindEmpty();
             GenerateBoard();
             housePositions = new int[n,6];
             roadsPositions = new int[n,6];
@@ -448,6 +450,7 @@ namespace Catan
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
+            robberPosition = FindEmpty();
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
             GenerateBoard();
             housePositions = new int[n, 6];
@@ -580,7 +583,7 @@ namespace Catan
             {
                 if (numbers[i] == nm)
                 {
-                    for(int j=0; i<6; j++)
+                    for(int j=0; j<6; j++)
                     {
                         Node node = allNodes[housePositions[i, j]];
                         if (node.Owner != null)GiveResource(node.Owner, board[i], (node.Type == Space.House) ? 1 : 2);
@@ -607,7 +610,7 @@ namespace Catan
         private void GenerateBoard()
         {
             GenerateTiles();
-            boardGraph = new Graph(n, numbers, FindEmpty());
+            boardGraph = new Graph(n, numbers, robberPosition);
             AddAllEdges();
             GenerateNumbers();
             numbers = boardGraph.numberpermutation;
