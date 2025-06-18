@@ -452,6 +452,13 @@ namespace Catan
             return result;
         }
 
+        public List<int> LegalUpgradeMoves(Player player)
+        {
+            List<int> result = new List<int>();
+            for (int i = 0; i < cntNodes; i++) if (allNodes[i].Owner == player) result.Add(allNodes[i].nodeIndex);
+            return result;
+        }
+
         public List<int> LegalRoadsMoves(Player player)
         {
             List<int> result = new List<int>();
