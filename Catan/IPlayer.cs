@@ -24,7 +24,15 @@ namespace Catan
 
         public Resources Rob()
         {
-
+            Random rng = new Random();
+            int index = rng.Next(ResourcesCount);
+            int rs = 0;
+            Resources[] list = (Resources[])Enum.GetValues(typeof(Resources));
+            while(index > 0)
+            {
+                index -= resources[list[rs++]];
+            }
+            return list[rs];
         }
 
         public void Give(Resources resource)
