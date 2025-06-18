@@ -19,7 +19,19 @@ namespace Catan
     {
         public string Name { get; }
         public int Id { get; }
+        public int Points {  get; }
         public  Dictionary<Resources, int> resources { get; set; }
+
+        public Resources Rob()
+        {
+
+        }
+
+        public void Give(Resources resource)
+        {
+            if(resources.ContainsKey(resource))resources[resource]++;
+            else resources[resource] = 1;
+        }
 
         public int ResourcesCount { get; }
         public  Task<Move> GetMove();
