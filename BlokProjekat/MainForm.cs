@@ -1,6 +1,7 @@
 using System.Net.Security;
 using System.Diagnostics;
 using Catan;
+using CNetworking;
 namespace ClientApp
 {
     public partial class MainForm : Form
@@ -8,6 +9,10 @@ namespace ClientApp
 
         
         NetworkClient client;
+        MsgTransceiver transceiver;
+        HumanPlayer myPlayer;
+        Board myBoard;
+
         Panel gamePanel;
         float gameScale = 0.8f;
         float gameLeftMargin = 0.1f;
@@ -17,7 +22,7 @@ namespace ClientApp
 
         static float interactRadius = 5f;
 
-        Board tempBoard;
+       
 
         Dictionary<Tile, SolidBrush> colors;
         Dictionary<int, Point> HousePoints;
@@ -31,7 +36,7 @@ namespace ClientApp
            // List<Player> list = new List<Player>();
             //curGame = new Game(list);
             
-            tempBoard = new Board();
+            myBoard = new Board();
 
             gamePanel = new Panel();
             gamePanel.BackColor = Color.Blue;
@@ -72,6 +77,9 @@ namespace ClientApp
             btnBuildHouse.Enabled = false;
             btnBuildRoad.Enabled = false;
 
+            //Networking & Game
+            myPlayer = new HumanPlayer("nis", 0);
+            transceiver = new MsgTransceiver(myBoard, myPlayer);
         }
 
         private float SqrDistance(Point a, Point b)
@@ -107,10 +115,6 @@ namespace ClientApp
 
         }
 
-        private async void StartGame()
-        {
-            await curGame.Update();
-        }
 
         private async void btnConnectServer_Click(object sender, EventArgs e)
         {
@@ -119,7 +123,14 @@ namespace ClientApp
                 if (dg.ShowDialog() == DialogResult.OK)
                 {
                     CMessage msg = await client.ConnectAsync(dg.ip, dg.port, dg.username);
-                    //if(msg.Type ==)
+                    if(msg.Type == "Handshake")
+                    {
+                        myPlayer.Id = (int)msg.Payload;
+                    }
+                    else
+                    {
+                        throw new Exception("Bad handshake");
+                    }
                 }
                 else
                 {
@@ -250,19 +261,19 @@ namespace ClientApp
 
                 //Debug.Write($"TILE {i}");
                
-                HousePoints[tempBoard.housePositions[i, 0]] = hexPoints[4];
-                HousePoints[tempBoard.housePositions[i, 1]] = hexPoints[3];
-                HousePoints[tempBoard.housePositions[i, 2]] = hexPoints[5];
-                HousePoints[tempBoard.housePositions[i, 3]] = hexPoints[2];
-                HousePoints[tempBoard.housePositions[i, 4]] = hexPoints[0];
-                HousePoints[tempBoard.housePositions[i, 5]] = hexPoints[1];
+                HousePoints[myBoard.housePositions[i, 0]] = hexPoints[4];
+                HousePoints[myBoard.housePositions[i, 1]] = hexPoints[3];
+                HousePoints[myBoard.housePositions[i, 2]] = hexPoints[5];
+                HousePoints[myBoard.housePositions[i, 3]] = hexPoints[2];
+                HousePoints[myBoard.housePositions[i, 4]] = hexPoints[0];
+                HousePoints[myBoard.housePositions[i, 5]] = hexPoints[1];
 
-                RoadPoints[tempBoard.housePositions[i, 0]] = Lerp(hexPoints[4], hexPoints[5], 0.5f);
-                RoadPoints[tempBoard.housePositions[i, 1]] = Lerp(hexPoints[5], hexPoints[0], 0.5f);
-                RoadPoints[tempBoard.housePositions[i, 2]] = Lerp(hexPoints[3], hexPoints[4], 0.5f);
-                RoadPoints[tempBoard.housePositions[i, 3]] = Lerp(hexPoints[0], hexPoints[1], 0.5f);
-                RoadPoints[tempBoard.housePositions[i, 4]] = Lerp(hexPoints[2], hexPoints[3], 0.5f);
-                RoadPoints[tempBoard.housePositions[i, 5]] = Lerp(hexPoints[1], hexPoints[2], 0.5f);
+                RoadPoints[myBoard.housePositions[i, 0]] = Lerp(hexPoints[4], hexPoints[5], 0.5f);
+                RoadPoints[myBoard.housePositions[i, 1]] = Lerp(hexPoints[5], hexPoints[0], 0.5f);
+                RoadPoints[myBoard.housePositions[i, 2]] = Lerp(hexPoints[3], hexPoints[4], 0.5f);
+                RoadPoints[myBoard.housePositions[i, 3]] = Lerp(hexPoints[0], hexPoints[1], 0.5f);
+                RoadPoints[myBoard.housePositions[i, 4]] = Lerp(hexPoints[2], hexPoints[3], 0.5f);
+                RoadPoints[myBoard.housePositions[i, 5]] = Lerp(hexPoints[1], hexPoints[2], 0.5f);
                 
              
                 Debug.WriteLine("");
@@ -272,7 +283,7 @@ namespace ClientApp
                 //g.DrawEllipse(new Pen(Color.Green), hexPoints[1].X - radius, hexPoints[1].Y - radius, radius * 2, radius * 2);
 
 
-                g.FillPolygon(colors[tempBoard.board[i]], hexPoints);
+                g.FillPolygon(colors[myBoard.board[i]], hexPoints);
                 //g.DrawRectangle(new Pen(Color.Red), new Rectangle((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize*MathF.Sqrt(3)/8f) * (currentRow-2)), (int)cellSize, (int)cellSize));
             }
 

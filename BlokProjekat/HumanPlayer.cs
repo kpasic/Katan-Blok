@@ -15,7 +15,7 @@ namespace Catan
         public event Action<HumanPlayer> OnMoveRequested;
         public event Action<HumanPlayer> OnDiscardRequested;
         public string Name { get; }
-        public int Id { get; }
+        public int Id { get; set; }
         public Dictionary<Resources, int> resources { get; set; }
         public HumanPlayer(string name, int id)
         {

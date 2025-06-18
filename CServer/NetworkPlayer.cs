@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Catan;
 using CNetworking;
-namespace Server
+namespace CServer
 {
     internal class NetworkPlayer : IPlayer
     {
@@ -54,6 +54,7 @@ namespace Server
 
         }
         
+        public int Points {get { throw new NotImplementedException(); } }
 
     }
 }

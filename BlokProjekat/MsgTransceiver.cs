@@ -12,7 +12,7 @@ namespace ClientApp
     {
         private Board board;
         private HumanPlayer player;
-
+        //imaginarni chat receiver...
         public MsgTransceiver(Board board, HumanPlayer player)
         {
             this.board = board;
@@ -25,14 +25,24 @@ namespace ClientApp
             switch (msg.Type)
             {
                 case "GetMove":
-                    Move move = await player.GetMove();
-                    return new CMessage("Move", move);
+                    Move reqMove = await player.GetMove();
+                    return new CMessage("Move", reqMove);
                 case "BoardState":
                     Board newBoard = msg.Payload as Board;
-
-                case default:
+                    board.Clone(newBoard);
+                    break;
+                case "Move":
+                    (Move move, IPlayer movingPlayer) = ((Move, IPlayer))msg.Payload;
+                    move.Execute(board, movingPlayer);
+                    break;
+                case "Chat":
+                    string message = (string)msg.Payload;
+                    //imaginarni chat
+                    break;
+                default:
                     throw new Exception($"Unrecognized message type: {msg.Type}");
             }
+            throw new Exception("???");
         }
 
     }

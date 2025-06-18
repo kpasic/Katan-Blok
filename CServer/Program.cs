@@ -3,9 +3,8 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using Catan;
-using Server;
-
-namespace RServer{ 
+using CNetworking;
+namespace CServer{ 
     public class Program
     {
         const int maxPlayers = 2;
@@ -31,6 +30,9 @@ namespace RServer{
 
                 NetworkPlayer newPlayer = new NetworkPlayer(client, stream, name, players.Count);
                 players.Add(newPlayer);
+
+                //Handshake
+                await NetworkUtils.SendObjectAsync(newPlayer.Id, stream);
             }
             
 
@@ -42,8 +44,8 @@ namespace RServer{
             {
                 if (player is NetworkPlayer)
                 {
-                    NetworkPlayer nPlayer = (NetworkPlayer)player;
-                    await nPlayer.SendBoardState(game);
+                    //NetworkPlayer nPlayer = (NetworkPlayer)player;
+                    //await nPlayer.SendBoardState(game);
                 }
             }
 
