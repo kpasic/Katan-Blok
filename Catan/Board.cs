@@ -504,7 +504,7 @@ namespace Catan
             return result;
         }
 
-        /*
+        
         public List<int> LegalRobberMoves()
         {
             List<int> results = new List<int>();
@@ -525,7 +525,7 @@ namespace Catan
             }
             return results;
         }
-        */
+        
         #endregion
 
         #region BoardFunctions
