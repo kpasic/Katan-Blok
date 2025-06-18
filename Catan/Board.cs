@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -609,16 +610,23 @@ namespace Catan
                     for (int j = 0; j < 6; j++)
                     {
                         Node node = allNodes[housePositions[i, j]];
-                        if (node.Owner != null) GiveResource(node.Owner, board[i], (node.Type == Space.House) ? 1 : 2);
+                        if (node.Owner != null) GiveResource(node.Owner, FindResources(board[i]), (node.Type == Space.House) ? 1 : 2);
                     }
                 }
             }
         }
 
-        private void GiveResource(IPlayer player, Tile resoursce, int nm)
+        Resources FindResources(Tile tile)
         {
-            //for(int i = 0; i < nm; i++) player.Give(resoursce);
+            int index = Array.IndexOf(Enum.GetValues(typeof(Tile)), tile);
+            Resources value = (Resources)Enum.GetValues(typeof(Resources)).GetValue(index);
+            return value;
 
+        }
+
+        private void GiveResource(IPlayer player, Resources resource, int nm)
+        {
+            for(int i = 0; i < nm; i++) player.Give(resource);
         }
 
         private int FindEmpty()
@@ -658,8 +666,8 @@ namespace Catan
         public void MoveRobber(int tileId, IPlayer player, IPlayer robing)
         {
             robberPosition = tileId;
-            //Tile tile = robing.Rob();
-            //player.Give(tile)
+            Resources resources = robing.Rob();
+            player.Give(resources);
 
         }
 
