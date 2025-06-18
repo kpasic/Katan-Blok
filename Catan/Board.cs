@@ -279,7 +279,7 @@ namespace Catan
     public class RoadMove : Move
     {
         int roadId;
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             board.PlaceRoad(roadId, player, Space.Road);
         }
@@ -296,8 +296,8 @@ namespace Catan
     public class RobberMove : Move
     {
         int tileId;
-        Player RobberPlayer;
-        public override void Execute(Board board, Player player)
+        IPlayer RobberPlayer;
+        public override void Execute(Board board, IPlayer player)
         {
             board.MoveRobber(tileId, player, RobberPlayer);
         }
@@ -306,7 +306,7 @@ namespace Catan
     public class UpgradeMove : Move
     {
         int nodeId;
-        public override void Execute(Board board, Player player)
+        public override void Execute(Board board, IPlayer player)
         {
             board.UpgradeHouse(nodeId, player);
         }
@@ -595,7 +595,7 @@ namespace Catan
             }
         }
 
-        private void GiveResource(Player player, Tile resoursce, int nm)
+        private void GiveResource(IPlayer player, Tile resoursce, int nm)
         {
             //for(int i = 0; i < nm; i++) player.Give(resoursce);
 
@@ -610,7 +610,7 @@ namespace Catan
         #endregion
 
         #region BoardMoves
-        public void PlaceHouse(int nodeId, Player player, Space nodeSpace)
+        public void PlaceHouse(int nodeId, IPlayer player, Space nodeSpace)
         {
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
             AddRoads(nodeId, player.Id);
@@ -635,7 +635,7 @@ namespace Catan
             allRoads[roadId].SetOwner(player);
         }
 
-        public void MoveRobber(int tileId, Player player, Player robing)
+        public void MoveRobber(int tileId, IPlayer player, IPlayer robing)
         {
             robberPosition = tileId;
             //Tile tile = robing.Rob();
@@ -643,7 +643,7 @@ namespace Catan
 
         }
 
-        public void UpgradeHouse(int nodeId,  Player player)
+        public void UpgradeHouse(int nodeId,  IPlayer player)
         {
             allNodes[nodeId].SetType(Space.City);
         }
@@ -747,11 +747,23 @@ namespace Catan
         
         #endregion
 
-        /*
-        public (List<RoadMove>, List<HouseMove>) GetLegalPlaceMoves(Player player)
-        {
 
+        public void Clone(Board other)
+        {
+            this.robberPosition = other.robberPosition;
+            this.n = other.n;
+            this.cntNodes = other.cntNodes;
+            this.cntRoads = other.cntRoads;
+            this.board = other.board;
+            this.numbers = other.numbers;
+            this.boardGraph = other.boardGraph;
+            this.placeGraph = other.placeGraph;
+            this.housePositions = other.housePositions;
+            this.roadsPositions = other.roadsPositions;
+            this.allNodes = other.allNodes;
+            this.allRoads = other.allRoads;
+            this.nmPlayers = other.nmPlayers;
         }
-        */
+        
     }
 }
