@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
@@ -496,6 +497,7 @@ namespace Catan
             return result;
         }
 
+
         public List<int> LegalRobberMoves()
         {
             List<int> results = new List<int>();
@@ -590,8 +592,8 @@ namespace Catan
 
         private void GiveResource(Player player, Tile resoursce, int nm)
         {
-            // player.GiveResource
-            // player.GiveResource
+            //for(int i = 0; i < nm; i++) player.Give(resoursce);
+
         }
 
         private int FindEmpty()
@@ -628,10 +630,11 @@ namespace Catan
             allRoads[roadId].SetOwner(player);
         }
 
-        public void MoveRobber(int tileId, Player player)
+        public void MoveRobber(int tileId, Player player, Player robing)
         {
             robberPosition = tileId;
-
+            //Tile tile = robing.Rob();
+            //player.Give(tile)
 
         }
 
