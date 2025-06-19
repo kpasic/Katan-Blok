@@ -6,13 +6,21 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
+    
     public class StupidPlayer : IPlayer
     {
-    
+
+        private TaskCompletionSource<Move>? ui;
+        private TaskCompletionSource<int[]>? ds;
+        private TaskCompletionSource rl;
+
+        public event Action<StupidPlayer> OnMoveRequested;
+        public event Action<StupidPlayer> OnDiscardRequested;
         public string Name { get; }
-        public int Id { get; }
+        public int Id { get; set; }
         public int Points { get; set; }
         public Dictionary<Resources, int> resources { get; set; }
+        public Dictionary<Resources, int> TradingCurse { get; set; }
         public StupidPlayer(string name, int id)
         {
             Name = name;
@@ -20,6 +28,18 @@ namespace Catan
             Id = id;
         }
 
+        
+        public void ChangePoints(int x)
+        {
+            Points += x;
+        }
+
+        #region ResourceFunctions
+
+        public void ChangeCurse(Resources resource, int x)
+        {
+            resources[resource] = x;
+        }
         public int ResourcesCount
         {
             get
@@ -32,20 +52,88 @@ namespace Catan
                 return count;
             }
         }
-
-        public void ChangePoints(int x)
+        public void RemoveResources(Dictionary<Resources, int> resource)
         {
-            Points += x;
+            foreach (Resources x in resource.Keys)
+            {
+                resources[x] -= resource[x];
+            }
         }
 
+        public void GiveResources(Dictionary<Resources, int> resource)
+        {
+            foreach (Resources x in resource.Keys)
+            {
+                resources[x] += resource[x];
+            }
+        }
+
+        public Resources Rob()
+        {
+            Random rng = new Random();
+            int index = rng.Next(ResourcesCount);
+            int rs = 0;
+            Resources[] list = (Resources[])Enum.GetValues(typeof(Resources));
+            while (index > 0)
+            {
+                index -= resources[list[rs++]];
+            }
+            return list[rs];
+        }
+
+        public void Give(Resources resource)
+        {
+            if (resources.ContainsKey(resource)) resources[resource]++;
+            else resources[resource] = 1;
+
+        }
+        #endregion
         public Task<Move> GetMove()
         {
-           throw new NotImplementedException();
+            ui = new TaskCompletionSource<Move>();
+
+            OnMoveRequested?.Invoke(this);
+
+            return ui.Task;
         }
 
 
+        public void SubmitMove(Move move)
+        {
+            if (ui != null && !ui.Task.IsCompleted)
+            {
+                ui.SetResult(move);
+            }
+        }
 
-      
-        
+        #region Checkifpossible
+
+        public bool CanBuildHouse()
+        {
+            return resources[Resources.Wood] > 0 && resources[Resources.Wool] > 0 && resources[Resources.Wheat] > 0 && resources[Resources.Brick] > 0;
+        }
+
+        public bool CanBuildRoad()
+        {
+            return resources[Resources.Wood] > 0 && resources[Resources.Brick] > 0;
+        }
+
+        public bool CanUpgradeHouse()
+        {
+            return resources[Resources.Stone] > 2 && resources[Resources.Wheat] > 1;
+        }
+
+        public bool CanBuyDevelopment()
+        {
+            return resources[Resources.Stone] > 0 && resources[Resources.Wheat] > 0 && resources[Resources.Wool] > 0;
+        }
+        #endregion
     }
+
+
+
+
+
 }
+    
+

@@ -433,10 +433,13 @@ namespace Catan
         public int[] numbers;
         Graph boardGraph;
         PlaceGraph placeGraph;
+        Dictionary<int, Resources> allPorts;
         public int[,] housePositions;
         public int[,] roadsPositions;
         public Node[] allNodes;
         public Edge[] allRoads;
+        (int, int)[] portNodes = { (0, 1), (3, 4), (14, 15), (26, 37), (45, 46), (50, 51), (47, 48), (28, 38), (7, 17) };
+        string[] portStrings = { "wood", "brick", "stone", "wheat", "sheep", "31", "31", "31", "31" };
         int nmPlayers;
         #endregion
 
@@ -463,6 +466,7 @@ namespace Catan
             MakeNodeGraph();
             GenerateHousePositions();
             GenerateRoadsPositions();
+            GeneratePort();
             
         }
 
@@ -489,7 +493,7 @@ namespace Catan
             MakeNodeGraph();
             GenerateHousePositions();
             GenerateRoadsPositions();
-
+            GeneratePort();
         }
 
         #endregion
@@ -661,8 +665,45 @@ namespace Catan
         #region BoardMoves
         public void PlaceHouse(int nodeId, IPlayer player, Space nodeSpace)
         {
+            Dictionary<Resources, int> House = new Dictionary<Resources, int>();
+            House[Resources.Wood] = 1;
+            House[Resources.Brick] = 1;
+            House[Resources.Wool] = 1;
+            House[Resources.Wheat] = 1;
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
             AddRoads(nodeId, player.Id);
+            for (int i = 0; i < 9; i++)
+            {
+                if (nodeId == portNodes[i].Item1 || nodeId == portNodes[i].Item2)
+                {
+                    string s = portStrings[i];
+                    switch (s)
+                    {
+                        case ("wood"):
+                            player.ChangeCurse(Resources.Wood, 2);
+                            break;
+                        case ("sheep"):
+                            player.ChangeCurse(Resources.Wood, 2);
+                            break;
+                        case ("brick"):
+                            player.ChangeCurse(Resources.Brick, 2);
+                            break;
+                        case ("stone"):
+                            player.ChangeCurse(Resources.Brick, 2);
+                            break;
+                        case ("wheat"):
+                            player.ChangeCurse(Resources.Wheat, 2);
+                            break;
+                        case ("31"):
+                            player.ChangeCurse(Resources.Wood, 3);
+                            player.ChangeCurse(Resources.Wood, 3);
+                            player.ChangeCurse(Resources.Brick, 3);
+                            player.ChangeCurse(Resources.Brick, 3);
+                            player.ChangeCurse(Resources.Wheat, 3);
+                            break;
+                    }
+                }
+            }
             foreach(int i in adj)
             {
                 allNodes[i].SetOwner(null);
@@ -672,17 +713,22 @@ namespace Catan
             allNodes[nodeId].SetOwner(player);
             allNodes[nodeId].SetState(false);
             player.ChangePoints(1);
+            player.RemoveResources(House);
         }
 
 
         public void PlaceRoad(int roadId, IPlayer player, Space space)
         {
+            Dictionary<Resources, int> Road = new Dictionary<Resources, int>();
+            Road[Resources.Wood] = 1;
+            Road[Resources.Brick] = 1;
             HashSet<int> adj1 = placeGraph.AdjecentNodes(allRoads[roadId].nod1.nodeIndex);
             HashSet<int> adj2 = placeGraph.AdjecentNodes(allRoads[roadId].nod2.nodeIndex);
             foreach(int i in adj1)if (allNodes[i].state) allNodes[i].Add(player.Id);
             foreach (int i in adj2) if (allNodes[i].state) allNodes[i].Add(player.Id);
             allRoads[roadId].SetType(space);
             allRoads[roadId].SetOwner(player);
+            player.RemoveResources(Road);
         }
 
         public void MoveRobber(int tileId, IPlayer player, IPlayer robing)
@@ -696,6 +742,10 @@ namespace Catan
         public void UpgradeHouse(int nodeId,  IPlayer player)
         {
             allNodes[nodeId].SetType(Space.City);
+            Dictionary<Resources, int> City = new Dictionary<Resources, int>();
+            City[Resources.Stone] = 3;
+            City[Resources.Wheat] = 2;
+            player.RemoveResources(City);
             player.ChangePoints(1);
         }
 
@@ -704,15 +754,31 @@ namespace Catan
         #region BoardGeneration
         private void GenerateBoard()
         {
-            GenerateTiles();
+            GeneratePermutation(board);
             boardGraph = new Graph(n, numbers, robberPosition);
             AddAllEdges();
             GenerateNumbers();
             numbers = boardGraph.numberpermutation;
         }
 
-        
+        private void GeneratePort()
+        {
+            GeneratePermutation(portNodes);
+            GeneratePermutation(portStrings);
+        }
 
+        private void GeneratePermutation<T>(T[] ts)
+        {
+            int n = ts.Length;
+            Random rnd = new Random();
+            while (n > 1)
+            {
+                int k = rnd.Next(n--);
+                (ts[n], ts[k]) = (ts[k], ts[n]);
+            }
+        }
+        
+        /*
         private void GenerateTiles()
         {
             int n = board.Length;
@@ -723,6 +789,7 @@ namespace Catan
                 (board[n], board[k]) = (board[k], board[n]);
             }
         }
+        */
 
         private void GenerateNumbers()
         {

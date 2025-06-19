@@ -24,24 +24,16 @@ namespace Catan
         public int Points { get; set; }
         public  Dictionary<Resources, int> resources { get; set; }
 
-        public Resources Rob()
-        {
-            Random rng = new Random();
-            int index = rng.Next(ResourcesCount);
-            int rs = 0;
-            Resources[] list = (Resources[])Enum.GetValues(typeof(Resources));
-            while(index > 0)
-            {
-                index -= resources[list[rs++]];
-            }
-            return list[rs];
-        }
+        public Dictionary<Resources, int> TradingCurse { get; set; }
 
-        public void Give(Resources resource)
-        {
-            if(resources.ContainsKey(resource))resources[resource]++;
-            else resources[resource] = 1;
-        }
+        public void RemoveResources(Dictionary<Resources, int> takenResources);
+        public void GiveResources(Dictionary<Resources, int> takenResources);
+
+        public void ChangeCurse(Resources res, int x);
+
+        public Resources Rob();
+
+        public void Give(Resources resource);
 
         public void ChangePoints(int x);
 
