@@ -87,6 +87,8 @@ namespace ClientApp
             //Networking & Game
             myPlayer = new HumanPlayer("nis", 0);
             transceiver = new MsgTransceiver(myBoard, myPlayer);
+
+            client = new NetworkClient(transceiver);
         }
 
         private float SqrDistance(Point a, Point b)
@@ -175,12 +177,12 @@ namespace ClientApp
                     }
                     else
                     {
-                        throw new Exception("Bad handshake");
+                        throw new Exception("Bad client handshake");
                     }
                 }
                 else
                 {
-                    throw new Exception("ijao");
+                    //throw new Exception("ijao");
                 }
             }
 
@@ -354,7 +356,7 @@ namespace ClientApp
 
         private void btnStartServer_Click(object sender, EventArgs e)
         {
-            Process.Start("CServer\\bin\\Debug\\net8.0");
+            Process.Start("..\\..\\..\\..\\CServer\\bin\\Debug\\net8.0\\CServer.exe");
         }
     }
 }

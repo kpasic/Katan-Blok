@@ -12,7 +12,7 @@ namespace Server
             Console.WriteLine("test");
             Board board = new Board(4);
             Move move = new FirstMove();
-            IPlayer player = new StupidPlayer("cigan", 1);
+            //IPlayer player = new StupidPlayer("cigan", 1);
             //board.GenerateBoard();
             for(int i=0;i<19; i++)
             {
@@ -53,7 +53,7 @@ namespace Server
                 (int, int) a = board.Roll();
                 niz[a.Item1+a.Item2]++;
             }
-            foreach(int i in niz)Console.WriteLine(i);
+            foreach(int i in niz)Console.WriteLine(i);*/
         }
     }
 }

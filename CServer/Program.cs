@@ -74,7 +74,7 @@ namespace CServer{
         }
 
 
-        public static async void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Server startup");
             int port = 5000;
@@ -91,9 +91,18 @@ namespace CServer{
                 Console.WriteLine("Player Connected");
 
 
-                string name = await NetworkUtils.ReceiveObjectAsync<string>(stream);
+                CMessage name = await NetworkUtils.ReceiveObjectAsync<CMessage>(stream);
+                if (name.Type != "Connect") throw new Exception("ne radi connect");
+                try
+                {
+                    throw new Exception($"test {name.Payload}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
 
-                NetworkPlayer newPlayer = new NetworkPlayer(client, stream, name, players.Count);
+                NetworkPlayer newPlayer = new NetworkPlayer(client, stream, (string)name.Payload, players.Count);
                 players.Add(newPlayer);
 
                 //Handshake
@@ -116,8 +125,11 @@ namespace CServer{
             //promeniti ovo eventualno..
 
             Console.WriteLine("Kraj");
+            Console.ReadLine();
+
             listener.Stop();
             Console.ReadLine();
+           
         }
     }
 }

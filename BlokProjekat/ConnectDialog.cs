@@ -23,7 +23,7 @@ namespace ClientApp
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            if (IPAddress.TryParse(ip, out IPAddress? wht) == true && !string.IsNullOrEmpty(txtUserName.Text)) 
+            if ((IPAddress.TryParse(ip, out IPAddress? wht) == true && !string.IsNullOrEmpty(txtUserName.Text)) || true) 
             {
                 ip = txtIp.Text;
                 port = int.Parse(txtPort.Text);
