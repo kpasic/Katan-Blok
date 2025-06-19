@@ -259,8 +259,8 @@ namespace Catan
 
     public class HouseMove : Move
     {
-        int nodeId;
-        Space nodeSpace;
+        public int nodeId;
+        public Space nodeSpace;
         public override void Execute(Board board, IPlayer player)
         {
             board.PlaceHouse(nodeId, player, nodeSpace);

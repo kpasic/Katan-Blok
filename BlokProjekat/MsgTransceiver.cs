@@ -13,17 +13,21 @@ namespace ClientApp
     {
         public Board board { get; private set; }
         private HumanPlayer player;
+        private Control control;
         //imaginarni chat receiver...
-        public MsgTransceiver(Board board, HumanPlayer player)
+        public MsgTransceiver(Board board, HumanPlayer player, Control Control)
         {
             this.board = board;
             this.player = player;
+            control = Control;
         }
 
         public async Task<CMessage> Proccess(CMessage msg)
         {
+            CMessage response = new CMessage("null", null);
             Debug.WriteLine($"STIGAO MY MSG TYPE {msg.Type}");
             if (msg == null) throw new Exception("zasto null :(");
+            control.Invalidate();
             switch (msg.Type)
             {
                 case "Play":
@@ -33,16 +37,23 @@ namespace ClientApp
                 case "Move":
                     (Move move, IPlayer movingPlayer) = ((Move, IPlayer))msg.Payload;
                     move.Execute(board, movingPlayer);
-                    break;
+                    response.Type = "Ok";
+                    response.Payload = null;
+                    return response;
                 case "BoardState":
                     Board newBoard = (Board)msg.Payload;
                     board.Clone(newBoard);
-                    CMessage response = new CMessage("Ok", null);
+                    response = new CMessage("Begin", null);
                     return response;
                 case "Chat":
                     string message = (string)msg.Payload;
                     //imaginarni chat
                     break;
+                case "Wait":
+                    player.myTurn = false;
+                    response.Type = "Ok";
+                    response.Payload = null;
+                    return response; 
                 default:
                     throw new Exception($"Unrecognized message type: {msg.Type}");
             }
