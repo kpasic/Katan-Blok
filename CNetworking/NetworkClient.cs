@@ -39,7 +39,7 @@ namespace CNetworking
         {
             if (client != null && stream != null)
             {
-                await NetworkUtils.SendObjectAsync(startMsg, stream);
+                NetworkUtils.SendObjectAsync(startMsg, stream);
 
                 while (true)
                 {

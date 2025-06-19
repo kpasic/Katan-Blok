@@ -49,7 +49,9 @@ namespace CServer{
                     else response.Type = "Wait";
                     return response;
                 case "RequestBoard":
+                    Console.WriteLine("dobio sam request");
                     response = new CMessage("BoardState", myGame.board);
+                    Task.Delay(100);
                     return response;
                 case "RequestRoll":
                     (int a, int b) = myGame.board.Roll();
