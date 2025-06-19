@@ -8,7 +8,8 @@ namespace Server
     {
         public static void Main()
         {
-           /* Console.WriteLine("test");
+            /*
+            Console.WriteLine("test");
             Board board = new Board(4);
             Move move = new FirstMove();
             //IPlayer player = new StupidPlayer("cigan", 1);
