@@ -419,8 +419,8 @@ namespace Catan
         public int[,] roadsPositions;
         public Node[] allNodes;
         public Edge[] allRoads;
-        (int, int)[] portNodes;
-        string[] portStrings;
+        (int, int)[] portNodes = { (0, 1), (3, 4), (14, 15), (26, 37), (45, 46), (50, 51), (47, 48), (28, 38), (7, 17) };
+        string[] portStrings = { "wood", "brick", "stone", "wheat", "sheep", "31", "31", "31", "31" };
         int nmPlayers;
         #endregion
 
@@ -677,9 +677,7 @@ namespace Catan
                             player.ChangeCurse(Resources.Brick, 3);
                             player.ChangeCurse(Resources.Wheat, 3);
                             break;
-
                     }
-
                 }
             }
             foreach(int i in adj)
@@ -732,10 +730,8 @@ namespace Catan
 
         private void GeneratePort()
         {
-            (int, int)[] portNodes = { (0, 1), (3, 4), (14, 15), (26, 37), (45, 46), (50, 51), (47, 48), (28, 38), (7, 17) };
-            string[] strings = { "wood", "brick", "stone", "wheat", "sheep", "31", "31", "31", "31" };
             GeneratePermutation(portNodes);
-            GeneratePermutation(strings);
+            GeneratePermutation(portStrings);
         }
 
         private void GeneratePermutation<T>(T[] ts)

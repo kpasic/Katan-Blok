@@ -18,11 +18,17 @@ namespace Catan
         public int Id { get; set; }
         public int Points { get; set; }
         public Dictionary<Resources, int> resources { get; set; }
+        public Dictionary<Resources, int> TradingCurse { get; set; }
         public HumanPlayer(string name, int id)
         {
             Name = name;
             resources = new Dictionary<Resources, int>();
             Id = id;
+        }
+
+        public void ChangeCurse(Resources resource, int x)
+        {
+            resources[resource] = x; 
         }
 
         public int ResourcesCount
@@ -42,6 +48,25 @@ namespace Catan
             Points += x;
         }
 
+        public Resources Rob()
+        {
+            Random rng = new Random();
+            int index = rng.Next(ResourcesCount);
+            int rs = 0;
+            Resources[] list = (Resources[])Enum.GetValues(typeof(Resources));
+            while (index > 0)
+            {
+                index -= resources[list[rs++]];
+            }
+            return list[rs];
+        }
+
+        public void Give(Resources resource)
+        {
+            if (resources.ContainsKey(resource)) resources[resource]++;
+            else resources[resource] = 1;
+            
+        }
         public Task<Move> GetMove()
         {
             ui = new TaskCompletionSource<Move>();
