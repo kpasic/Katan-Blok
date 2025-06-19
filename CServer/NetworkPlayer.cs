@@ -13,7 +13,7 @@ namespace CServer
         public TcpClient client;
         public NetworkStream stream;
         private Dictionary<Resources, int> resources;
-
+        public Dictionary<Resources, int> TradingCurse { get; set; }
         public string Name { get;}
         public int Id { get;}
 
@@ -63,6 +63,48 @@ namespace CServer
         }
 
         public int Points { get; set; }
+
+
+        public void ChangeCurse(Resources resource, int x)
+        {
+            resources[resource] = x;
+        }
+       
+        public void RemoveResources(Dictionary<Resources, int> resource)
+        {
+            foreach (Resources x in resource.Keys)
+            {
+                resources[x] -= resource[x];
+            }
+        }
+
+        public void GiveResources(Dictionary<Resources, int> resource)
+        {
+            foreach (Resources x in resource.Keys)
+            {
+                resources[x] += resource[x];
+            }
+        }
+
+        public Resources Rob()
+        {
+            Random rng = new Random();
+            int index = rng.Next(ResourcesCount);
+            int rs = 0;
+            Resources[] list = (Resources[])Enum.GetValues(typeof(Resources));
+            while (index > 0)
+            {
+                index -= resources[list[rs++]];
+            }
+            return list[rs];
+        }
+
+        public void Give(Resources resource)
+        {
+            if (resources.ContainsKey(resource)) resources[resource]++;
+            else resources[resource] = 1;
+
+        }
 
     }
 }
