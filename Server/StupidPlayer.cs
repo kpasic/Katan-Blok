@@ -106,6 +106,8 @@ namespace Catan
             }
         }
 
+        #region Checkifpossible
+
         public bool CanBuildHouse()
         {
             return resources[Resources.Wood] > 0 && resources[Resources.Wool] > 0 && resources[Resources.Wheat] > 0 && resources[Resources.Brick] > 0;
@@ -115,6 +117,17 @@ namespace Catan
         {
             return resources[Resources.Wood] > 0 && resources[Resources.Brick] > 0;
         }
+
+        public bool CanUpgradeHouse()
+        {
+            return resources[Resources.Stone] > 2 && resources[Resources.Wheat] > 1;
+        }
+
+        public bool CanBuyDevelopment()
+        {
+            return resources[Resources.Stone] > 0 && resources[Resources.Wheat] > 0 && resources[Resources.Wool] > 0;
+        }
+        #endregion
     }
 
 

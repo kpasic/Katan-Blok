@@ -646,6 +646,11 @@ namespace Catan
         #region BoardMoves
         public void PlaceHouse(int nodeId, IPlayer player, Space nodeSpace)
         {
+            Dictionary<Resources, int> House = new Dictionary<Resources, int>();
+            House[Resources.Wood] = 1;
+            House[Resources.Brick] = 1;
+            House[Resources.Wool] = 1;
+            House[Resources.Wheat] = 1;
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
             AddRoads(nodeId, player.Id);
             for (int i = 0; i < 9; i++)
@@ -689,17 +694,22 @@ namespace Catan
             allNodes[nodeId].SetOwner(player);
             allNodes[nodeId].SetState(false);
             player.ChangePoints(1);
+            player.RemoveResources(House);
         }
 
 
         public void PlaceRoad(int roadId, IPlayer player, Space space)
         {
+            Dictionary<Resources, int> Road = new Dictionary<Resources, int>();
+            Road[Resources.Wood] = 1;
+            Road[Resources.Brick] = 1;
             HashSet<int> adj1 = placeGraph.AdjecentNodes(allRoads[roadId].nod1.nodeIndex);
             HashSet<int> adj2 = placeGraph.AdjecentNodes(allRoads[roadId].nod2.nodeIndex);
             foreach(int i in adj1)if (allNodes[i].state) allNodes[i].Add(player.Id);
             foreach (int i in adj2) if (allNodes[i].state) allNodes[i].Add(player.Id);
             allRoads[roadId].SetType(space);
             allRoads[roadId].SetOwner(player);
+            player.RemoveResources(Road);
         }
 
         public void MoveRobber(int tileId, IPlayer player, IPlayer robing)
@@ -713,6 +723,10 @@ namespace Catan
         public void UpgradeHouse(int nodeId,  IPlayer player)
         {
             allNodes[nodeId].SetType(Space.City);
+            Dictionary<Resources, int> City = new Dictionary<Resources, int>();
+            City[Resources.Stone] = 3;
+            City[Resources.Wheat] = 2;
+            player.RemoveResources(City);
             player.ChangePoints(1);
         }
 
