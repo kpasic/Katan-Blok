@@ -7,7 +7,7 @@ using CNetworking;
 namespace CServer{ 
     public class Program
     {
-        const int maxPlayers = 1;
+        const int maxPlayers = 2;
         private static NetworkPlayer currentPlayer;
         private static bool playerRolled;
 
