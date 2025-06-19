@@ -26,11 +26,20 @@ namespace Catan
             Id = id;
         }
 
-        public void ChangeCurse(Resources resource, int x)
+        
+
+        
+        public void ChangePoints(int x)
         {
-            resources[resource] = x; 
+            Points += x;
         }
 
+        #region ResourceFunctions
+
+        public void ChangeCurse(Resources resource, int x)
+        {
+            resources[resource] = x;
+        }
         public int ResourcesCount
         {
             get
@@ -43,9 +52,12 @@ namespace Catan
                 return count;
             }
         }
-        public void ChangePoints(int x)
+        public void RemoveResources(Dictionary<Resources, int> resource)
         {
-            Points += x;
+            foreach(Resources x in resource.Keys)
+            {
+                resources[x] -= resource[x];
+            }
         }
 
         public Resources Rob()
@@ -67,6 +79,8 @@ namespace Catan
             else resources[resource] = 1;
             
         }
+
+        #endregion
         public Task<Move> GetMove()
         {
             ui = new TaskCompletionSource<Move>();

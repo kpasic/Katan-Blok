@@ -24,6 +24,8 @@ namespace Catan
 
         public Dictionary<Resources, int> TradingCurse { get; set; }
 
+        public void RemoveResources(Dictionary<Resources, int> takenResources);
+
         public void ChangeCurse(Resources res, int x);
 
         public Resources Rob();
