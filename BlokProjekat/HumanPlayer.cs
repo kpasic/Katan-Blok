@@ -60,6 +60,14 @@ namespace Catan
             }
         }
 
+        public void GiveResources(Dictionary<Resources, int> resource)
+        {
+            foreach (Resources x in resource.Keys)
+            {
+                resources[x] += resource[x];
+            }
+        }
+
         public Resources Rob()
         {
             Random rng = new Random();
