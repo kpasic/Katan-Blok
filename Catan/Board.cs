@@ -862,7 +862,11 @@ namespace Catan
             this.allNodes = other.allNodes;
             this.allRoads = other.allRoads;
             this.nmPlayers = other.nmPlayers;
-        }
+            this.allPorts = other.allPorts;
+            this.portNodes = other.portNodes;
+            this.portStrings = other.portStrings;
+       
+    }
         
     }
 }
