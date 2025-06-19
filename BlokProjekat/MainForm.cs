@@ -56,6 +56,7 @@ namespace ClientApp
                 gamePanel.Invalidate();
             };
             //events
+            Debug.WriteLine("startnigga");
             gamePanel.Paint += DrawGame;
             Resize += (object sender, EventArgs e) => gamePanel.Invalidate();
             Resize += (object sender, EventArgs e) => Invalidate();
@@ -200,7 +201,7 @@ namespace ClientApp
 
             btnBuildHouse.Enabled = myPlayer.CanBuildHouse() && myPlayer.myTurn;
             btnBuildRoad.Enabled = myPlayer.CanBuildRoad() && myPlayer.myTurn;
-
+            //Debug.Write($"jednakost referenca je {ReferenceEquals(myBoard, transceiver.board)}");
         }
 
         public Point[] InscribeHexagonDEPRECATED(Point topLeft, int size, bool RT)
@@ -362,6 +363,12 @@ namespace ClientApp
         private void btnStartServer_Click(object sender, EventArgs e)
         {
             Process.Start("..\\..\\..\\..\\CServer\\bin\\Debug\\net8.0\\CServer.exe");
+        }
+
+        private void testTimer_Tick(object sender, EventArgs e)
+        {
+            Debug.WriteLine("sigma");
+           Debug.WriteLine($"jednakost referenca je {ReferenceEquals(myBoard, transceiver.board)}");
         }
     }
 }

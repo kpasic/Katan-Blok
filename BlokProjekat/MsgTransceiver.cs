@@ -11,7 +11,7 @@ namespace ClientApp
 {
     public class MsgTransceiver : IMsgTransceiver
     {
-        private Board board;
+        public Board board { get; private set; }
         private HumanPlayer player;
         //imaginarni chat receiver...
         public MsgTransceiver(Board board, HumanPlayer player)

@@ -28,13 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             mainGrid = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
             btnConnectServer = new Button();
+            btnStartServer = new Button();
             ActionsLayout = new TableLayoutPanel();
             btnBuildHouse = new Button();
             btnBuildRoad = new Button();
-            btnStartServer = new Button();
+            testTimer = new System.Windows.Forms.Timer(components);
             mainGrid.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ActionsLayout.SuspendLayout();
@@ -85,6 +87,16 @@
             btnConnectServer.UseVisualStyleBackColor = true;
             btnConnectServer.Click += btnConnectServer_Click;
             // 
+            // btnStartServer
+            // 
+            btnStartServer.Location = new Point(3, 102);
+            btnStartServer.Name = "btnStartServer";
+            btnStartServer.Size = new Size(146, 122);
+            btnStartServer.TabIndex = 1;
+            btnStartServer.Text = "button1";
+            btnStartServer.UseVisualStyleBackColor = true;
+            btnStartServer.Click += btnStartServer_Click;
+            // 
             // ActionsLayout
             // 
             ActionsLayout.ColumnCount = 2;
@@ -124,15 +136,11 @@
             btnBuildRoad.Text = "Build Road";
             btnBuildRoad.UseVisualStyleBackColor = true;
             // 
-            // btnStartServer
+            // testTimer
             // 
-            btnStartServer.Location = new Point(3, 102);
-            btnStartServer.Name = "btnStartServer";
-            btnStartServer.Size = new Size(146, 122);
-            btnStartServer.TabIndex = 1;
-            btnStartServer.Text = "button1";
-            btnStartServer.UseVisualStyleBackColor = true;
-            btnStartServer.Click += btnStartServer_Click;
+            testTimer.Enabled = true;
+            testTimer.Interval = 500;
+            testTimer.Tick += testTimer_Tick;
             // 
             // MainForm
             // 
@@ -160,5 +168,6 @@
         private Button btnBuildHouse;
         private Button btnBuildRoad;
         private Button btnStartServer;
+        private System.Windows.Forms.Timer testTimer;
     }
 }
