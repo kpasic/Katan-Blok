@@ -23,7 +23,8 @@ namespace CNetworking
         {
             Type = type;
             Payload = payload;
-            PayloadType = payload.GetType().AssemblyQualifiedName;
+            if (Payload != null) PayloadType = payload.GetType().AssemblyQualifiedName;
+            else PayloadType = "null";
         }
     }
     public class NetworkUtils
@@ -80,18 +81,27 @@ namespace CNetworking
             {
                 if (message.Payload is JsonElement payloadJson && !string.IsNullOrEmpty(message.PayloadType))
                 {
-                    Type actualPayloadType = Type.GetType(message.PayloadType);
-                    if (actualPayloadType != null)
+                    if(message.PayloadType == "null")
                     {
-                        message.Payload = JsonSerializer.Deserialize(payloadJson.GetRawText(), actualPayloadType, options);
+                        message.Payload = null;
+
                     }
-                    else
+                    else 
                     {
-                        // Fallback if the type can't be found (e.g., assembly not loaded)
-                        // It will remain a JsonElement or be deserialized to object
-                        Console.WriteLine($"Warning: Could not find type {message.PayloadType}. Payload will remain as JsonElement or 'object'.");
-                        message.Payload = JsonSerializer.Deserialize<object>(payloadJson.GetRawText(), options);
+                        Type actualPayloadType = Type.GetType(message.PayloadType);
+                        if (actualPayloadType != null)
+                        {
+                            message.Payload = JsonSerializer.Deserialize(payloadJson.GetRawText(), actualPayloadType, options);
+                        }
+                        else
+                        {
+                            // Fallback if the type can't be found (e.g., assembly not loaded)
+                            // It will remain a JsonElement or be deserialized to object
+                            Console.WriteLine($"Warning: Could not find type {message.PayloadType}. Payload will remain as JsonElement or 'object'.");
+                            message.Payload = JsonSerializer.Deserialize<object>(payloadJson.GetRawText(), options);
+                        }
                     }
+                   
                 }
             }
 
