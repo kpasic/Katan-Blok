@@ -38,6 +38,7 @@ namespace ClientApp
                     Debug.WriteLine($"omg nigga");
                     Board newBoard = (Board)msg.Payload;
                     board.Clone(newBoard);
+                    Debug.WriteLine($"test {board.board[0]}");
                     CMessage response = new CMessage("Ok", null);
                     return response;
                

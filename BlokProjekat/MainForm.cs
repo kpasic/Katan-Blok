@@ -46,17 +46,17 @@ namespace ClientApp
             gamePanel.TabStop = true;
             //gamePanel.SetStyle(ControlStyles.Selectable, true);
 
-            Debug.WriteLine("Main form init");
+            //Debug.WriteLine("Main form init");
             gamePanel.MouseEnter += (object sender, EventArgs e) => gamePanel.Focus();
             gamePanel.MouseWheel += (object sender, MouseEventArgs e) =>
             {
-                Debug.WriteLine($"detect scroll: {e.Delta} ");
+                //Debug.WriteLine($"detect scroll: {e.Delta} ");
                 gameScale += gameScrollSpeed * e.Delta;
                 gameScale = Math.Clamp(gameScale, 0.1f, 0.9f);
                 gamePanel.Invalidate();
             };
             //events
-            Debug.WriteLine("startnigga");
+            //Debug.WriteLine("startnigga");
             gamePanel.Paint += DrawGame;
             Resize += (object sender, EventArgs e) => gamePanel.Invalidate();
             Resize += (object sender, EventArgs e) => Invalidate();
@@ -367,8 +367,8 @@ namespace ClientApp
 
         private void testTimer_Tick(object sender, EventArgs e)
         {
-            Debug.WriteLine("sigma");
-           Debug.WriteLine($"jednakost referenca je {ReferenceEquals(myBoard, transceiver.board)}");
+          //  Debug.WriteLine("sigma");
+          // Debug.WriteLine($"jednakost referenca je {ReferenceEquals(myBoard, transceiver.board)}");
         }
     }
 }
