@@ -35,14 +35,10 @@ namespace ClientApp
                     move.Execute(board, movingPlayer);
                     break;
                 case "BoardState":
-                    Debug.WriteLine($"TYPE BGOARD {msg.PayloadType}");
-                    Debug.WriteLine($"omg nigga");
                     Board newBoard = (Board)msg.Payload;
                     board.Clone(newBoard);
-                    Debug.WriteLine($"test {board.board[0]}");
                     CMessage response = new CMessage("Ok", null);
                     return response;
-               
                 case "Chat":
                     string message = (string)msg.Payload;
                     //imaginarni chat

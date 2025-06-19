@@ -5,10 +5,59 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 namespace CNetworking
 {
-    
+    using System;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+
+    public class Int2DArrayConverter : JsonConverter<int[,]>
+    {
+        public override int[,] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var jagged = JsonSerializer.Deserialize<int[][]>(ref reader, options);
+            if (jagged == null || jagged.Length == 0) return new int[0, 0];
+
+            int rows = jagged.Length;
+            int cols = jagged[0].Length;
+            var result = new int[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                if (jagged[i].Length != cols)
+                    throw new JsonException("Inconsistent column size in jagged array");
+
+                for (int j = 0; j < cols; j++)
+                {
+                    result[i, j] = jagged[i][j];
+                }
+            }
+
+            return result;
+        }
+
+        public override void Write(Utf8JsonWriter writer, int[,] value, JsonSerializerOptions options)
+        {
+            int rows = value.GetLength(0);
+            int cols = value.GetLength(1);
+
+            writer.WriteStartArray();
+            for (int i = 0; i < rows; i++)
+            {
+                writer.WriteStartArray();
+                for (int j = 0; j < cols; j++)
+                {
+                    writer.WriteNumberValue(value[i, j]);
+                }
+                writer.WriteEndArray();
+            }
+            writer.WriteEndArray();
+        }
+    }
+
+
+
     public interface IMsgTransceiver
     { 
         Task<CMessage> Proccess(CMessage msg);
@@ -17,9 +66,9 @@ namespace CNetworking
     public class CMessage
     {
         public string Type;
-        public object Payload;
+        public object? Payload;
         public string PayloadType;
-        public CMessage(string type, object payload)
+        public CMessage(string type, object? payload)
         {
             Type = type;
             Payload = payload;
@@ -32,7 +81,7 @@ namespace CNetworking
         public static JsonSerializerOptions options = new JsonSerializerOptions
         {
             IncludeFields = true,
-
+            Converters = { new Int2DArrayConverter() }
         };
 
         public static byte[] Serialize<T>(T obj)
@@ -48,7 +97,7 @@ namespace CNetworking
             byte[] lengthPrefix = BitConverter.GetBytes(length);
 
             if (stream != null)
-            {
+            { 
                 await stream.WriteAsync(lengthPrefix, 0, lengthPrefix.Length);
 
                 await stream.WriteAsync(payload, 0, payload.Length);
@@ -74,7 +123,7 @@ namespace CNetworking
 
             string jsonString = Encoding.UTF8.GetString(buffer);
             T result = JsonSerializer.Deserialize<T>(jsonString, options);
-
+            
             if (result == null) throw new Exception("Failed to deserialize the object.");
 
             if (result is CMessage message)
@@ -91,13 +140,23 @@ namespace CNetworking
                         Type actualPayloadType = Type.GetType(message.PayloadType);
                         if (actualPayloadType != null)
                         {
-                            message.Payload = JsonSerializer.Deserialize(payloadJson.GetRawText(), actualPayloadType, options);
+                            try
+                            {
+                                message.Payload = JsonSerializer.Deserialize(payloadJson.GetRawText(), actualPayloadType, options);
+                            }
+                            catch (Exception ex)
+                            {
+                                //Console.WriteLine($"Deserialization failed for {actualPayloadType}: {ex.Message}");
+                                //Debug.WriteLine($"Deserialization failed for {actualPayloadType}: {ex.Message}");
+                                throw;
+                            }
+
                         }
                         else
                         {
                             // Fallback if the type can't be found (e.g., assembly not loaded)
                             // It will remain a JsonElement or be deserialized to object
-                            Console.WriteLine($"Warning: Could not find type {message.PayloadType}. Payload will remain as JsonElement or 'object'.");
+                            //Console.WriteLine($"Warning: Could not find type {message.PayloadType}. Payload will remain as JsonElement or 'object'.");
                             message.Payload = JsonSerializer.Deserialize<object>(payloadJson.GetRawText(), options);
                         }
                     }

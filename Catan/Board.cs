@@ -340,15 +340,16 @@ namespace Catan
 
     public class Node
     {
-        public Node(int nmPlayers, int index) {
+        public Node(int nmPlayers, int nodeindex) {
             Owner = null;
             state = true;
-            nodeIndex = index;
+            nmplayers = nmPlayers;
+            nodeIndex = nodeindex;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
-            for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
+            for(int i=0; i < nmPlayers; i++)isAvailable.Add(i);
         }
-
+        public int nmplayers;
         public bool state;
         private HashSet<int> isAvailable;
         public int nodeIndex;
@@ -390,12 +391,12 @@ namespace Catan
         public Node nod1;
         public Node nod2;
 
-        public Edge(Node n1, Node n2, int id)
+        public Edge(Node Nod1, Node Nod2, int EdgeId)
         {
-            edgeId = id;
+            edgeId = EdgeId;
             Owner = null;
-            nod1 = n1;
-            nod2 = n2;
+            nod1 = Nod1;
+            nod2 = Nod2;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
         }
