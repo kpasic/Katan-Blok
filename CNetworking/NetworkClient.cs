@@ -35,10 +35,12 @@ namespace CNetworking
             return message;
         }
 
-        public async Task StartListening()
+        public async Task StartListening(CMessage startMsg)
         {
             if (client != null && stream != null)
             {
+                await NetworkUtils.SendObjectAsync(startMsg, stream);
+
                 while (true)
                 {
                     CMessage msg = await NetworkUtils.ReceiveObjectAsync<CMessage>(stream);

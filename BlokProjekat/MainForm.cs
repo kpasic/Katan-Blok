@@ -175,6 +175,10 @@ namespace ClientApp
                     {
                         myPlayer.Id = (int)msg.Payload;
                         Debug.WriteLine($"MY ID {myPlayer.Id}");
+
+                        btnConnectServer.Enabled = false;
+                        CMessage startMsg = new CMessage("RequestBoard", null);
+                        client.StartListening(startMsg);
                     }
                     else
                     {
