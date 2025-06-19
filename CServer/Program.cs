@@ -7,7 +7,7 @@ using CNetworking;
 namespace CServer{ 
     public class Program
     {
-        const int maxPlayers = 4;
+        const int maxPlayers = 1;
         private static NetworkPlayer currentPlayer;
         private static bool playerRolled;
 
@@ -108,12 +108,12 @@ namespace CServer{
                 //Handshake
                 await NetworkUtils.SendObjectAsync(new CMessage("Handshake", newPlayer.Id), stream);
             }
-            
+            Console.WriteLine("begin game");
 
 
 
             myGame = new Game(players);
-
+            
             for (int i = 0; i < players.Count; i++)
             {
                 if(i != players.Count - 1) Start((NetworkPlayer)players[i]);

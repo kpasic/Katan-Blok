@@ -24,7 +24,7 @@ namespace Catan
         public Game(List<IPlayer> players)
         {
             this.players = players;
-            Board board = new Board(players.Count);
+            board = new Board(players.Count);
         }
 
         public (int, int) Roll()

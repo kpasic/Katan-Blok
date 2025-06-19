@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -33,6 +34,8 @@ namespace ClientApp
                     move.Execute(board, movingPlayer);
                     break;
                 case "BoardState":
+                    Debug.WriteLine($"TYPE BGOARD {msg.PayloadType}");
+                    Debug.WriteLine($"omg nigga");
                     Board newBoard = (Board)msg.Payload;
                     board.Clone(newBoard);
                     CMessage response = new CMessage("Ok", null);
