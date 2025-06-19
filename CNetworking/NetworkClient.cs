@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace CNetworking
 {
@@ -39,11 +40,12 @@ namespace CNetworking
         {
             if (client != null && stream != null)
             {
-                NetworkUtils.SendObjectAsync(startMsg, stream);
+                await NetworkUtils.SendObjectAsync(startMsg, stream);
 
                 while (true)
                 {
                     CMessage msg = await NetworkUtils.ReceiveObjectAsync<CMessage>(stream);
+                    Debug.WriteLine("RECEIVED MSG !!");
                     await NetworkUtils.SendObjectAsync(msgTransceiver.Proccess(msg), stream);
                 }
             }

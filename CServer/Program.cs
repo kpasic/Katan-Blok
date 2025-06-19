@@ -27,9 +27,9 @@ namespace CServer{
                     storedLifespan = players.Count - 1;
                 }
 
-
+                if (response.Type == "BoardState") Console.WriteLine("saljem board");
                 NetworkUtils.SendObjectAsync(response, player.stream);
-
+                if (response.Type == "BoardState") Console.WriteLine("poslao sam board");
                 if (response.Type == "EndGame") break;
             }
         }
@@ -51,7 +51,6 @@ namespace CServer{
                 case "RequestBoard":
                     Console.WriteLine("dobio sam request");
                     response = new CMessage("BoardState", myGame.board);
-                    Task.Delay(100);
                     return response;
                 case "RequestRoll":
                     (int a, int b) = myGame.board.Roll();

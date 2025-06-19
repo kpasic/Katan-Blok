@@ -22,6 +22,7 @@ namespace ClientApp
 
         public async Task<CMessage> Proccess(CMessage msg)
         {
+            Debug.WriteLine($"STIGAO MY MSG TYPE {msg.Type}");
             if (msg == null) throw new Exception("zasto null :(");
             switch (msg.Type)
             {
