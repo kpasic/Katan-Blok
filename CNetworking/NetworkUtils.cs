@@ -11,6 +11,7 @@ namespace CNetworking
     public interface IMsgTransceiver
     { 
         Task<CMessage> Proccess(CMessage msg);
+
     }
     public class CMessage
     {

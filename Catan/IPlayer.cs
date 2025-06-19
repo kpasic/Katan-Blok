@@ -18,6 +18,8 @@ namespace Catan
     public interface IPlayer
     {
         public string Name { get; }
+
+        public bool myTurn { get; set; }
         public int Id { get; }
         public int Points { get; set; }
         public  Dictionary<Resources, int> resources { get; set; }

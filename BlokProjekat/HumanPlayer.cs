@@ -17,6 +17,8 @@ namespace Catan
         public string Name { get; }
         public int Id { get; set; }
         public int Points { get; set; }
+
+        public bool myTurn {  get; set; }
         public Dictionary<Resources, int> resources { get; set; }
         public HumanPlayer(string name, int id)
         {

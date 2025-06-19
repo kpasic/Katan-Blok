@@ -8,7 +8,7 @@ using Catan;
 using CNetworking;
 namespace CServer
 {
-    internal class NetworkPlayer : IPlayer
+    public class NetworkPlayer : IPlayer
     {
         public TcpClient client;
         public NetworkStream stream;
@@ -16,6 +16,9 @@ namespace CServer
 
         public string Name { get;}
         public int Id { get;}
+
+        public bool myTurn { get; set; }
+
         Dictionary<Resources, int> IPlayer.resources { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public int ResourcesCount => throw new NotImplementedException();
@@ -30,7 +33,7 @@ namespace CServer
 
         public async Task<Move> GetMove()
         {
-            await NetworkUtils.SendObjectAsync(new CMessage("GetMove", null), stream);
+            await NetworkUtils.SendObjectAsync(new CMessage("Play", null), stream);
             return await NetworkUtils.ReceiveObjectAsync<Move>(stream);
         }
 
@@ -53,8 +56,13 @@ namespace CServer
         public void Send(CMessage msg) {
 
         }
-        
-        public int Points {get { throw new NotImplementedException(); } }
+
+        public void ChangePoints(int x)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Points { get; set; }
 
     }
 }

@@ -313,6 +313,25 @@ namespace Catan
         }
     }
 
+    public class EndMove : Move
+    {
+        public override void Execute(Board board, IPlayer player)
+        {
+            return;
+        }
+    }
+
+    public class DiscardMove : Move
+    {
+        Dictionary<Resources, int> discarded;
+        public override void Execute(Board board, IPlayer player)
+        {
+            foreach((Resources r, int i) in discarded)
+            {
+                player.RemoveResources(discarded);
+            }
+        }
+    }
 
 
 

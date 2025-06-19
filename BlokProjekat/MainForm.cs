@@ -7,7 +7,7 @@ namespace ClientApp
     public partial class MainForm : Form
     {
 
-        
+
         NetworkClient client;
         MsgTransceiver transceiver;
         HumanPlayer myPlayer;
@@ -22,20 +22,22 @@ namespace ClientApp
 
         static float interactRadius = 5f;
 
-       
+
 
         Dictionary<Tile, SolidBrush> colors;
         Dictionary<int, Point> HousePoints;
         Dictionary<int, Point> RoadPoints;
 
         bool placingHouse, placingRoad, upgradingHouse;
+
+
         public MainForm()
         {
             InitializeComponent();
 
-           // List<Player> list = new List<Player>();
+            // List<Player> list = new List<Player>();
             //curGame = new Game(list);
-            
+
             myBoard = new Board();
 
             gamePanel = new Panel();
@@ -56,6 +58,7 @@ namespace ClientApp
             //events
             gamePanel.Paint += DrawGame;
             Resize += (object sender, EventArgs e) => gamePanel.Invalidate();
+            Resize += (object sender, EventArgs e) => Invalidate();
 
             mainGrid.Controls.Add(gamePanel, 0, 0);
 
@@ -66,7 +69,7 @@ namespace ClientApp
             colors.Add(Tile.Wheat, new SolidBrush(Color.Yellow));
             colors.Add(Tile.Wood, new SolidBrush(Color.DarkGreen));
             colors.Add(Tile.Wool, new SolidBrush(Color.LimeGreen));
-            colors.Add(Tile.Brick, new SolidBrush (Color.OrangeRed));
+            colors.Add(Tile.Brick, new SolidBrush(Color.OrangeRed));
             colors.Add(Tile.Stone, new SolidBrush(Color.DarkSlateGray));
 
             //Points
@@ -76,6 +79,10 @@ namespace ClientApp
             //Controls
             btnBuildHouse.Enabled = false;
             btnBuildRoad.Enabled = false;
+            placingHouse = false;
+            placingRoad = false;
+            upgradingHouse = false;
+
 
             //Networking & Game
             myPlayer = new HumanPlayer("nis", 0);
@@ -99,12 +106,51 @@ namespace ClientApp
             return null;
         }
 
-        private void OnMoveRequested(HumanPlayer player)
+
+        private async Task<Point> MouseClickAsync(Control control)
+        {
+            var tcs = new TaskCompletionSource<Point>();
+
+            MouseEventHandler handler = null;
+            handler = (s, e) =>
+            {
+                // Unsubscribe after click
+                control.MouseClick -= handler;
+                tcs.SetResult(e.Location);
+            };
+
+            control.MouseClick += handler;
+            return await tcs.Task;
+        }
+
+        private async void OnMoveRequested(HumanPlayer player)
         {
             btnBuildHouse.Enabled = true;
             btnBuildRoad.Enabled = true;
             //PlaceMove place = new PlaceMove();
 
+
+            while (true)
+            {
+                Point p = await MouseClickAsync(gamePanel);
+
+                if (placingHouse)
+                {
+                    int? index = CollidePoints(p, HousePoints);
+                    if (index != null)
+                    {
+
+                    }
+                }
+                else if (placingRoad)
+                {
+
+                }
+                else if (upgradingHouse)
+                {
+
+                }
+            }
             //player.SubmitMove(place);
             //ui sranja.
         }
@@ -123,7 +169,7 @@ namespace ClientApp
                 if (dg.ShowDialog() == DialogResult.OK)
                 {
                     CMessage msg = await client.ConnectAsync(dg.ip, dg.port, dg.username);
-                    if(msg.Type == "Handshake")
+                    if (msg.Type == "Handshake")
                     {
                         myPlayer.Id = (int)msg.Payload;
                     }
@@ -145,12 +191,9 @@ namespace ClientApp
         {
             Graphics g = e.Graphics;
 
-            int[] widths = mainGrid.GetColumnWidths();
-            int[] heights = mainGrid.GetRowHeights();
-            int gameWidth = widths[0];
-            int gameHeight = heights[0];
+            btnBuildHouse.Enabled = myPlayer.CanBuildHouse() && myPlayer.myTurn;
+            btnBuildRoad.Enabled = myPlayer.CanBuildRoad() && myPlayer.myTurn;
 
-            
         }
 
         public Point[] InscribeHexagonDEPRECATED(Point topLeft, int size, bool RT)
@@ -160,7 +203,7 @@ namespace ClientApp
             topLeftT.X = topLeft.X;
             topLeftT.Y = topLeft.Y;
 
-            if(RT) (topLeftT.X, topLeftT.Y) = (topLeftT.X, topLeftT.Y);
+            if (RT) (topLeftT.X, topLeftT.Y) = (topLeftT.X, topLeftT.Y);
 
             points[0].X = topLeftT.X;
             points[0].Y = topLeftT.Y + size / 2;
@@ -238,18 +281,19 @@ namespace ClientApp
             float cellSize = Size * cellScale;
 
 
-            float MidLeftOffset = leftMargin + cellSize/4f; //+ Size*MathF.Sqrt(3)/16f;
-            float sTopOffset = topMargin + Size / 2.6f + (cellSize - cellSize * MathF.Sqrt(3) / 8f)/8f;
+            float MidLeftOffset = leftMargin + cellSize / 4f; //+ Size*MathF.Sqrt(3)/16f;
+            float sTopOffset = topMargin + Size / 2.6f + (cellSize - cellSize * MathF.Sqrt(3) / 8f) / 8f;
 
             //Debug.WriteLine($"kys {sTopOffset + 2.5f * (cellSize - cellSize * MathF.Sqrt(3) / 8f) - topMargin - Size/2f}");
 
-            int[] rowOffsets = { 3, 7, 12, 16, 19};
+            int[] rowOffsets = { 3, 7, 12, 16, 19 };
             int[] lOffsets = { 2, 1, 0, 1, 2 };
             int currentRow = 0;
-            for(int i = 0; i < 19; i++)
+            for (int i = 0; i < 19; i++)
             {
                 float sLeftOffset = MidLeftOffset;
-                if (i == rowOffsets[currentRow]) {
+                if (i == rowOffsets[currentRow])
+                {
                     //Debug.WriteLine("secerlema " + currentRow);
                     currentRow++;
                 }
@@ -260,7 +304,7 @@ namespace ClientApp
                 Point[] hexPoints = GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize * MathF.Sqrt(3) / 8f) * (currentRow - 2))), cellSize, true);
 
                 //Debug.Write($"TILE {i}");
-               
+
                 HousePoints[myBoard.housePositions[i, 0]] = hexPoints[4];
                 HousePoints[myBoard.housePositions[i, 1]] = hexPoints[3];
                 HousePoints[myBoard.housePositions[i, 2]] = hexPoints[5];
@@ -274,8 +318,8 @@ namespace ClientApp
                 RoadPoints[myBoard.housePositions[i, 3]] = Lerp(hexPoints[0], hexPoints[1], 0.5f);
                 RoadPoints[myBoard.housePositions[i, 4]] = Lerp(hexPoints[2], hexPoints[3], 0.5f);
                 RoadPoints[myBoard.housePositions[i, 5]] = Lerp(hexPoints[1], hexPoints[2], 0.5f);
-                
-             
+
+
                 Debug.WriteLine("");
 
                 float radius = cellSize / 5f;
@@ -294,7 +338,7 @@ namespace ClientApp
                 float radius = cellSize / 5f;
                 //g.DrawEllipse(new Pen(Color.Blue), HousePoints[ind].X - radius, HousePoints[ind].Y - radius, radius*2, radius*2);
             }
-            
+
             foreach (Point po in RoadPoints.Values)
             {
                 float radius = cellSize / 5f;
@@ -302,5 +346,15 @@ namespace ClientApp
             }
         }
         #endregion
+
+        private void btnBuildHouse_Click(object sender, EventArgs e)
+        {
+            placingHouse = !(placingHouse);
+        }
+
+        private void btnStartServer_Click(object sender, EventArgs e)
+        {
+            Process.Start("CServer\\bin\\Debug\\net8.0");
+        }
     }
 }

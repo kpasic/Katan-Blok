@@ -34,6 +34,7 @@
             ActionsLayout = new TableLayoutPanel();
             btnBuildHouse = new Button();
             btnBuildRoad = new Button();
+            btnStartServer = new Button();
             mainGrid.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ActionsLayout.SuspendLayout();
@@ -63,6 +64,7 @@
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(btnConnectServer, 0, 0);
+            tableLayoutPanel2.Controls.Add(btnStartServer, 0, 1);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(538, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -109,6 +111,7 @@
             btnBuildHouse.TabIndex = 0;
             btnBuildHouse.Text = "Build House";
             btnBuildHouse.UseVisualStyleBackColor = true;
+            btnBuildHouse.Click += btnBuildHouse_Click;
             // 
             // btnBuildRoad
             // 
@@ -120,6 +123,16 @@
             btnBuildRoad.TabIndex = 1;
             btnBuildRoad.Text = "Build Road";
             btnBuildRoad.UseVisualStyleBackColor = true;
+            // 
+            // btnStartServer
+            // 
+            btnStartServer.Location = new Point(3, 102);
+            btnStartServer.Name = "btnStartServer";
+            btnStartServer.Size = new Size(146, 122);
+            btnStartServer.TabIndex = 1;
+            btnStartServer.Text = "button1";
+            btnStartServer.UseVisualStyleBackColor = true;
+            btnStartServer.Click += btnStartServer_Click;
             // 
             // MainForm
             // 
@@ -146,5 +159,6 @@
         private TableLayoutPanel ActionsLayout;
         private Button btnBuildHouse;
         private Button btnBuildRoad;
+        private Button btnStartServer;
     }
 }

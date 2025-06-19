@@ -27,35 +27,25 @@ namespace Catan
             Board board = new Board(players.Count);
         }
 
-        public async Task Update()
+        public (int, int) Roll()
         {
-            while(GetGameState() == GameState.Active)
-            {
-                int diceNumber, dice1, dice2;
-                    (dice1, dice2) = board.Roll();
-                diceNumber = dice1+dice2;   
-
-                if(diceNumber == 7)
-                {
-                    foreach (IPlayer player in players) {
-                        if(player.ResourcesCount > discardLimit)
-                        {
-                            //await player.Discard();
-                        }
-                    }
-                }
-
-                IPlayer curPlayer = players[currentPlayerIndex];
-                Move move = await curPlayer.GetMove();
-                if (move != null)
-                {
-                    move.Execute(board, curPlayer);
-                }
-                currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
-            }
+            (int a, int b) = board.Roll();
+            board.DistributeResources(a + b);
+            return (a, b);
         }
 
-        private GameState GetGameState()
+        public (GameState, IPlayer) Update(Move move)
+        {
+            if(move is EndMove)
+            {
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
+            }
+
+            IPlayer curPlayer = players[currentPlayerIndex];
+            return (GetGameState(),  curPlayer);
+        }
+
+        public GameState GetGameState()
         {
             return GameState.Active;
         }

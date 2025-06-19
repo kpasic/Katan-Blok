@@ -24,17 +24,20 @@ namespace ClientApp
             if (msg == null) throw new Exception("zasto null :(");
             switch (msg.Type)
             {
-                case "GetMove":
+                case "Play":
+                    player.myTurn = true;
                     Move reqMove = await player.GetMove();
                     return new CMessage("Move", reqMove);
-                case "BoardState":
-                    Board newBoard = (Board)msg.Payload;
-                    board.Clone(newBoard);
-                    break;
                 case "Move":
                     (Move move, IPlayer movingPlayer) = ((Move, IPlayer))msg.Payload;
                     move.Execute(board, movingPlayer);
                     break;
+                case "BoardState":
+                    Board newBoard = (Board)msg.Payload;
+                    board.Clone(newBoard);
+                    CMessage response = new CMessage("Ok", null);
+                    return response;
+               
                 case "Chat":
                     string message = (string)msg.Payload;
                     //imaginarni chat

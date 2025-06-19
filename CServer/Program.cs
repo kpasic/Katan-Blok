@@ -8,6 +8,71 @@ namespace CServer{
     public class Program
     {
         const int maxPlayers = 2;
+        private static NetworkPlayer currentPlayer;
+        private static bool playerRolled;
+
+        private static Game myGame;
+        private static List<IPlayer> players;
+        private static CMessage stored;
+        private static int storedLifespan;
+        public static async Task Start(NetworkPlayer player)
+        {
+            while (true)
+            {
+                CMessage msg = await NetworkUtils.ReceiveObjectAsync<CMessage>(player.stream);
+                CMessage response = Proccess(msg, player);
+                if(storedLifespan <= 0)
+                {
+                    stored = null;
+                    storedLifespan = players.Count - 1;
+                }
+
+
+                NetworkUtils.SendObjectAsync(response, player.stream);
+
+                if (response.Type == "EndGame") break;
+            }
+        }
+        
+        public static CMessage Proccess(CMessage msg, NetworkPlayer sender)
+        {
+            CMessage response;
+            switch (msg.Type)
+            {
+                case "Ok":
+                    while (stored == null) Task.Delay(100);
+                    storedLifespan--;
+                    return stored;
+                case "Begin":
+                    response = new CMessage("null", null);
+                    if (sender == currentPlayer) response.Type = "Play";
+                    else response.Type = "Wait";
+                    return response;
+                case "RequestBoard":
+                    response = new CMessage("BoardState", myGame.board);
+                    return response;
+                case "RequestRoll":
+                    (int a, int b) = myGame.board.Roll();
+                    myGame.board.DistributeResources(a + b);
+                    return new CMessage("Roll", (a, b));
+                case "RequestDiscard":
+                    DiscardMove discardmove = (DiscardMove)msg.Payload;
+                    throw new Exception("kys");
+                case "Move":
+                    Move move = (Move)msg.Payload;
+                    (GameState state, IPlayer kys2) = myGame.Update(move);
+                    currentPlayer = (NetworkPlayer)kys2;
+                    stored = new CMessage("Move", move);
+                    if (currentPlayer == sender) response = new CMessage("Play", null);
+                    else if (state == GameState.Active) response = new CMessage("Wait", null);
+                    else response = new CMessage("EndGame", null);
+                    return response;                 
+                default:
+                    throw new Exception($"Unrecognized client message: {msg.Type}");
+            }
+
+        }
+
 
         public static async void Main(string[] args)
         {
@@ -17,7 +82,7 @@ namespace CServer{
             listener.Start();
             Console.WriteLine("Server listening");
 
-            List<IPlayer> players = new List<IPlayer>();
+            players = new List<IPlayer>();
             while(players.Count < maxPlayers)
             {
                 Console.WriteLine("Waiting for connection...");
@@ -32,30 +97,27 @@ namespace CServer{
                 players.Add(newPlayer);
 
                 //Handshake
-                await NetworkUtils.SendObjectAsync(newPlayer.Id, stream);
+                await NetworkUtils.SendObjectAsync(new CMessage("Handshake", newPlayer.Id), stream);
             }
             
 
 
 
-            Game game = new Game(players);
+            myGame = new Game(players);
 
-            foreach (IPlayer player in players)
+            for (int i = 0; i < players.Count; i++)
             {
-                if (player is NetworkPlayer)
-                {
-                    //NetworkPlayer nPlayer = (NetworkPlayer)player;
-                    //await nPlayer.SendBoardState(game);
-                }
+                if(i != players.Count - 1) Start((NetworkPlayer)players[i]);
+                else await Start((NetworkPlayer)players[i]);
             }
-
-            await game.Update();
+            
 
 
             //promeniti ovo eventualno..
 
             Console.WriteLine("Kraj");
             listener.Stop();
+            Console.ReadLine();
         }
     }
 }
