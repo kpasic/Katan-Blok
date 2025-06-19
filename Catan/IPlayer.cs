@@ -22,6 +22,13 @@ namespace Catan
         public int Points { get; set; }
         public  Dictionary<Resources, int> resources { get; set; }
 
+        public Dictionary<Resources, int> TradingCurse { get; set; }
+
+        public void ChangeCurse(Resources res, int x)
+        {
+
+        }
+
         public Resources Rob()
         {
             Random rng = new Random();

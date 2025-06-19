@@ -414,10 +414,13 @@ namespace Catan
         public int[] numbers;
         Graph boardGraph;
         PlaceGraph placeGraph;
+        Dictionary<int, Resources> allPorts;
         public int[,] housePositions;
         public int[,] roadsPositions;
         public Node[] allNodes;
         public Edge[] allRoads;
+        (int, int)[] portNodes;
+        string[] portStrings;
         int nmPlayers;
         #endregion
 
@@ -444,6 +447,7 @@ namespace Catan
             MakeNodeGraph();
             GenerateHousePositions();
             GenerateRoadsPositions();
+            GeneratePort();
             
         }
 
@@ -470,7 +474,7 @@ namespace Catan
             MakeNodeGraph();
             GenerateHousePositions();
             GenerateRoadsPositions();
-
+            GeneratePort();
         }
 
         #endregion
@@ -644,6 +648,40 @@ namespace Catan
         {
             HashSet<int> adj = placeGraph.AdjecentNodes(nodeId);
             AddRoads(nodeId, player.Id);
+            for (int i = 0; i < 9; i++)
+            {
+                if (nodeId == portNodes[i].Item1 || nodeId == portNodes[i].Item2)
+                {
+                    string s = portStrings[i];
+                    switch (s)
+                    {
+                        case ("wood"):
+                            player.ChangeCurse(Resources.Wood, 2);
+                            break;
+                        case ("sheep"):
+                            player.ChangeCurse(Resources.Wood, 2);
+                            break;
+                        case ("brick"):
+                            player.ChangeCurse(Resources.Brick, 2);
+                            break;
+                        case ("stone"):
+                            player.ChangeCurse(Resources.Brick, 2);
+                            break;
+                        case ("wheat"):
+                            player.ChangeCurse(Resources.Wheat, 2);
+                            break;
+                        case ("31"):
+                            player.ChangeCurse(Resources.Wood, 3);
+                            player.ChangeCurse(Resources.Wood, 3);
+                            player.ChangeCurse(Resources.Brick, 3);
+                            player.ChangeCurse(Resources.Brick, 3);
+                            player.ChangeCurse(Resources.Wheat, 3);
+                            break;
+
+                    }
+
+                }
+            }
             foreach(int i in adj)
             {
                 allNodes[i].SetOwner(null);
@@ -685,15 +723,33 @@ namespace Catan
         #region BoardGeneration
         private void GenerateBoard()
         {
-            GenerateTiles();
+            GeneratePermutation(board);
             boardGraph = new Graph(n, numbers, robberPosition);
             AddAllEdges();
             GenerateNumbers();
             numbers = boardGraph.numberpermutation;
         }
 
-        
+        private void GeneratePort()
+        {
+            (int, int)[] portNodes = { (0, 1), (3, 4), (14, 15), (26, 37), (45, 46), (50, 51), (47, 48), (28, 38), (7, 17) };
+            string[] strings = { "wood", "brick", "stone", "wheat", "sheep", "31", "31", "31", "31" };
+            GeneratePermutation(portNodes);
+            GeneratePermutation(strings);
+        }
 
+        private void GeneratePermutation<T>(T[] ts)
+        {
+            int n = ts.Length;
+            Random rnd = new Random();
+            while (n > 1)
+            {
+                int k = rnd.Next(n--);
+                (ts[n], ts[k]) = (ts[k], ts[n]);
+            }
+        }
+        
+        /*
         private void GenerateTiles()
         {
             int n = board.Length;
@@ -704,6 +760,7 @@ namespace Catan
                 (board[n], board[k]) = (board[k], board[n]);
             }
         }
+        */
 
         private void GenerateNumbers()
         {
