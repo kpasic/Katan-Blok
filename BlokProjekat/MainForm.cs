@@ -174,6 +174,7 @@ namespace ClientApp
                     if (msg.Type == "Handshake")
                     {
                         myPlayer.Id = (int)msg.Payload;
+                        Debug.WriteLine($"MY ID {myPlayer.Id}");
                     }
                     else
                     {
