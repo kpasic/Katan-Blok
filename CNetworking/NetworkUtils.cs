@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Reflection;
+using Catan;
+
 namespace CNetworking
 {
     using System;
@@ -85,6 +87,41 @@ namespace CNetworking
         {
             // Write the IntPtr as its underlying long value
             writer.WriteNumberValue(value.ToInt64());
+        }
+    }
+
+    public class MoveConverter : JsonConverter<Move>
+    {
+        public override Move Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using var doc = JsonDocument.ParseValue(ref reader);
+            var root = doc.RootElement;
+
+            if (!root.TryGetProperty("MoveType", out var typeProperty))
+                throw new JsonException("Missing MoveType discriminator");
+
+            string moveType = typeProperty.GetString();
+
+            Type actualType = moveType switch
+            {
+                nameof(HouseMove) => typeof(HouseMove),
+                nameof(RoadMove) => typeof(RoadMove),
+                nameof(FirstMove) => typeof(FirstMove),
+                nameof(TradeMove) => typeof(TradeMove),
+                nameof(RobberMove) => typeof(RobberMove),
+                nameof(UpgradeMove) => typeof(UpgradeMove),
+                nameof(EndMove) => typeof(EndMove),
+                nameof(DiscardMove) => typeof(DiscardMove),
+                _ => throw new JsonException($"Unknown MoveType: {moveType}")
+            };
+
+            var json = root.GetRawText();
+            return (Move)JsonSerializer.Deserialize(json, actualType, options);
+        }
+
+        public override void Write(Utf8JsonWriter writer, Move value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, (object)value, value.GetType(), options);
         }
     }
 
@@ -213,7 +250,8 @@ namespace CNetworking
                 new IntPtrConverter(),
                 new Int2DArrayConverter(),
                 new CMessageConverter(),
-                new TupleConverterFactory()
+                new TupleConverterFactory(),
+                new MoveConverter()
             }
         };
 
@@ -236,12 +274,12 @@ namespace CNetworking
 
                 await stream.WriteAsync(payload, 0, payload.Length);
             }*/
-            string json = JsonSerializer.Serialize(obj, obj.GetType(), options);
-    byte[] payload = Encoding.UTF8.GetBytes(json);
+                    string json = JsonSerializer.Serialize(obj, obj.GetType(), options);
+            byte[] payload = Encoding.UTF8.GetBytes(json);
 
-    var lengthPrefix = BitConverter.GetBytes(payload.Length);
-    await stream.WriteAsync(lengthPrefix, 0, lengthPrefix.Length);
-    await stream.WriteAsync(payload, 0, payload.Length);
+            var lengthPrefix = BitConverter.GetBytes(payload.Length);
+            await stream.WriteAsync(lengthPrefix, 0, lengthPrefix.Length);
+            await stream.WriteAsync(payload, 0, payload.Length);
         }
 
         public static async Task<T> ReceiveObjectAsync<T>(NetworkStream stream)

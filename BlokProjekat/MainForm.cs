@@ -142,7 +142,7 @@ namespace ClientApp
             while (true)
             {
                 Point p = await MouseClickAsync(gamePanel);
-
+                Debug.WriteLine("click");
                 if (placingHouse)
                 {
                     int? index = CollidePoints(p, HousePoints);
@@ -152,6 +152,7 @@ namespace ClientApp
                         move.nodeId = (int)index;
                         move.nodeSpace = Space.House;
                         myPlayer.SubmitMove(move);
+                        return;
                     }
                 }
                 else if (placingRoad)

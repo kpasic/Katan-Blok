@@ -104,6 +104,8 @@ namespace CServer{
         public static async Task Main(string[] args)
         {
             Console.WriteLine("Server startup");
+            Move move;
+            Console.WriteLine(typeof(Move).AssemblyQualifiedName);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
             int port = 5000;
             TcpListener listener = new TcpListener(IPAddress.Any, port);
