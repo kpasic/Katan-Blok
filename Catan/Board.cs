@@ -495,6 +495,7 @@ namespace Catan
     {
         #region Properties
         int robberPosition;
+        
         int n = 19;
         int cntNodes = 54;
         int cntRoads = 72;
@@ -503,6 +504,7 @@ namespace Catan
         Graph boardGraph;
         PlaceGraph placeGraph;
         Dictionary<int, Resources> allPorts;
+        Dictionary<int, IPlayer> allPlayers;
         public int[,] housePositions;
         public int[,] roadsPositions;
         public Node[] allNodes;
@@ -557,6 +559,36 @@ namespace Catan
             roadsPositions = new int[n, 6];
             allNodes = new Node[cntNodes];
             for (int i = 0; i < cntNodes; i++) allNodes[i] = new Node(nmPlayers,i);
+            allRoads = new Edge[cntRoads];
+            placeGraph = new PlaceGraph(cntNodes);
+            MakeNodeGraph();
+            GenerateHousePositions();
+            GenerateRoadsPositions();
+            GeneratePort();
+            robberPosition = FindEmpty();
+        }
+
+        public Board(int nmPlayers, List<IPlayer> players)
+        {
+            this.nmPlayers = nmPlayers;
+            n = 19;
+            board = new Tile[]{
+                Tile.Empty,
+            Tile.Wheat, Tile.Wheat, Tile.Wheat, Tile.Wheat,
+            Tile.Wool, Tile.Wool, Tile.Wool, Tile.Wool,
+            Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
+            Tile.Stone,Tile.Stone, Tile.Stone,
+            Tile.Brick,Tile.Brick,Tile.Brick};
+            foreach (IPlayer player in players)
+            {
+                allPlayers[player.Id] = player;
+            }
+            numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+            GenerateBoard();
+            housePositions = new int[n, 6];
+            roadsPositions = new int[n, 6];
+            allNodes = new Node[cntNodes];
+            for (int i = 0; i < cntNodes; i++) allNodes[i] = new Node(nmPlayers, i);
             allRoads = new Edge[cntRoads];
             placeGraph = new PlaceGraph(cntNodes);
             MakeNodeGraph();
@@ -728,6 +760,11 @@ namespace Catan
         {
             for (int i = 0; i < n; i++) if (board[i] == Tile.Empty) return i;
             return -1;
+        }
+
+        public IPlayer GetPlayerById(int id)
+        {
+            return allPlayers[id];
         }
 
         #endregion
