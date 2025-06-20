@@ -971,7 +971,7 @@ namespace Catan
             this.allPorts = other.allPorts;
             this.portNodes = other.portNodes;
             this.portStrings = other.portStrings;
-       
+            this.allPlayers = other.allPlayers;
     }
         
     }
