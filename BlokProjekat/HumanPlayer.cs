@@ -24,7 +24,14 @@ namespace Catan
         public HumanPlayer(string name, int id)
         {
             Name = name;
-            resources = new Dictionary<Resources, int>();
+            resources = new Dictionary<Resources, int>
+            {
+                {Resources.Wool, 1000 },
+                {Resources.Wood, 1000 },
+                {Resources.Wheat, 1000 },
+                {Resources.Stone, 1000 },
+                {Resources.Brick, 1000 },
+            };
             Id = id;
         }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security.AccessControl;
@@ -584,9 +585,11 @@ namespace Catan
             Tile.Brick,Tile.Brick,Tile.Brick};
             allPlayers = new Dictionary<int, IPlayer>();
             allPorts = new Dictionary<int, Resources>();
+            Debug.WriteLine("IGRACI:");
             foreach (IPlayer player in players)
             {
-                allPlayers[player.Id] = player;
+                allPlayers.Add(player.Id,player);
+                
             }
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
             GenerateBoard();
@@ -769,6 +772,13 @@ namespace Catan
 
         public IPlayer GetPlayerById(int id)
         {
+            Debug.Write("test");
+            foreach (int i in allPlayers.Keys)
+            {
+                Debug.WriteLine(i);
+            }
+            bool sadrzi = allPlayers.ContainsKey(id);
+            IPlayer player = allPlayers[id];
             return allPlayers[id];
         }
 

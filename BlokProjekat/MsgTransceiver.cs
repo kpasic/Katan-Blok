@@ -29,6 +29,7 @@ namespace ClientApp
             Debug.WriteLine($"STIGAO MY MSG TYPE {msg.Type}");
             if (msg == null) throw new Exception("zasto null :(");
             control.Invalidate();
+      
             switch (msg.Type)
             {
                 case "Play":
@@ -37,8 +38,8 @@ namespace ClientApp
                     return new CMessage("Move", reqMove);
                 case "Move":
                     (Move move, int id) = ((Move, int))msg.Payload;
-                    HumanPlayer fakePlayer = new HumanPlayer("ne znam", id);
-                    move.Execute(board, fakePlayer);
+                    IPlayer plejer = board.GetPlayerById(id);
+                    move.Execute(board, plejer);
                     response.Type = "Ok";
                     response.Payload = null;
                     return response;

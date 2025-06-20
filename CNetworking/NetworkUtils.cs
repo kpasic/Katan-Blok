@@ -282,6 +282,57 @@ namespace CNetworking
             await stream.WriteAsync(payload, 0, payload.Length);
         }
 
+
+        public static class PlayerTypeRegistry
+        {
+            private static readonly Dictionary<string, Type> _typeMap = new();
+
+            public static void RegisterPlayerType<T>() where T : IPlayer
+            {
+                _typeMap[typeof(T).Name] = typeof(T);
+            }
+
+            public static Type? Resolve(string typeName)
+            {
+                return _typeMap.TryGetValue(typeName, out var type) ? type : null;
+            }
+
+            public static string GetTypeName(IPlayer player) => player.GetType().Name;
+        }
+
+        public class IPlayerConverter : JsonConverter<IPlayer>
+        {
+            public override IPlayer? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                using JsonDocument doc = JsonDocument.ParseValue(ref reader);
+                JsonElement root = doc.RootElement;
+
+                if (!root.TryGetProperty("$type", out JsonElement typeProp))
+                    throw new JsonException("Missing $type discriminator");
+
+                string typeName = typeProp.GetString();
+                Type? targetType = PlayerTypeRegistry.Resolve(typeName);
+
+                if (targetType == null)
+                    throw new JsonException($"Unrecognized player type: {typeName}");
+
+                return (IPlayer?)JsonSerializer.Deserialize(root.GetRawText(), targetType, options);
+            }
+
+            public override void Write(Utf8JsonWriter writer, IPlayer value, JsonSerializerOptions options)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("$type", PlayerTypeRegistry.GetTypeName(value));
+
+                var json = JsonSerializer.SerializeToElement(value, value.GetType(), options);
+                foreach (var prop in json.EnumerateObject())
+                {
+                    prop.WriteTo(writer);
+                }
+
+                writer.WriteEndObject();
+            }
+        }
         public static async Task<T> ReceiveObjectAsync<T>(NetworkStream stream)
         {
             byte[] lengthPrefix = new byte[4];
