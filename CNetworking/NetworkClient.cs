@@ -44,9 +44,8 @@ namespace CNetworking
 
                 while (true)
                 {
-                    Debug.WriteLine("started listening...");
+                    
                     CMessage msg = await NetworkUtils.ReceiveObjectAsync<CMessage>(stream);
-                    Debug.WriteLine("RECEIVED MSG !!");
                     await NetworkUtils.SendObjectAsync(await msgTransceiver.Proccess(msg), stream);
                 }
             }

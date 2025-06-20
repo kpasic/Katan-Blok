@@ -83,12 +83,13 @@ namespace CServer{
                     (GameState state, IPlayer kys2) = myGame.Update(move);
                     NetworkPlayer prevPlayer = currentPlayer;
                     currentPlayer = (NetworkPlayer)kys2;
-                    stored = new CMessage("Move", (move, sender));
+                    int senderId = sender.Id;
+                    stored = new CMessage("Move", (move, senderId));
                     foreach(NetworkPlayer pp in players)
                     {
                         if (pp != prevPlayer) uninformedPlayers.Add(pp);
                     }
-                    if (myGame.GetGameState() == GameState.Active) response = new CMessage("Move", (move, sender));
+                    if (myGame.GetGameState() == GameState.Active) response = new CMessage("Move", (move, sender.Id));
                     else response = new CMessage("EndGame", null);
                     return response;
                 default:

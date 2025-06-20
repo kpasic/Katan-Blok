@@ -14,6 +14,7 @@ namespace ClientApp
         public Board board { get; private set; }
         private HumanPlayer player;
         private Control control;
+        private Dictionary<int, IPlayer> playerIds;
         //imaginarni chat receiver...
         public MsgTransceiver(Board board, HumanPlayer player, Control Control)
         {
@@ -35,8 +36,9 @@ namespace ClientApp
                     Move reqMove = await player.GetMove();
                     return new CMessage("Move", reqMove);
                 case "Move":
-                    (Move move, IPlayer movingPlayer) = ((Move, IPlayer))msg.Payload;
-                    move.Execute(board, movingPlayer);
+                    (Move move, int id) = ((Move, int))msg.Payload;
+                    HumanPlayer fakePlayer = new HumanPlayer("ne znam", id);
+                    move.Execute(board, fakePlayer);
                     response.Type = "Ok";
                     response.Payload = null;
                     return response;
