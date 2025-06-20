@@ -526,6 +526,7 @@ namespace Catan
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+            allPlayers = new Dictionary<int, IPlayer>();
             GenerateBoard();
             housePositions = new int[n,6];
             roadsPositions = new int[n,6];
@@ -552,7 +553,7 @@ namespace Catan
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
-            
+            allPlayers = new Dictionary<int, IPlayer>();
             numbers = new int[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
             GenerateBoard();
             housePositions = new int[n, 6];
