@@ -25,8 +25,10 @@ namespace ClientApp
 
 
         Dictionary<Tile, SolidBrush> colors;
+        Dictionary<int, SolidBrush> playerColors;
         Dictionary<int, Point> HousePoints;
         Dictionary<int, Point> RoadPoints;
+        
 
         bool placingHouse, placingRoad, upgradingHouse;
 
@@ -64,14 +66,17 @@ namespace ClientApp
 
 
             // Colors
-            colors = new Dictionary<Tile, SolidBrush>();
-            colors.Add(Tile.Empty, new SolidBrush(Color.LightGoldenrodYellow));
-            colors.Add(Tile.Wheat, new SolidBrush(Color.Yellow));
-            colors.Add(Tile.Wood, new SolidBrush(Color.DarkGreen));
-            colors.Add(Tile.Wool, new SolidBrush(Color.LimeGreen));
-            colors.Add(Tile.Brick, new SolidBrush(Color.OrangeRed));
-            colors.Add(Tile.Stone, new SolidBrush(Color.DarkSlateGray));
+            colors = new Dictionary<Tile, SolidBrush>
+            {
+                { Tile.Empty, new SolidBrush(Color.LightGoldenrodYellow) },
+                { Tile.Wheat, new SolidBrush(Color.Yellow) },
+                { Tile.Wood, new SolidBrush(Color.DarkGreen) },
+                { Tile.Wool, new SolidBrush(Color.LimeGreen) },
+                { Tile.Brick, new SolidBrush(Color.OrangeRed) },
+                { Tile.Stone, new SolidBrush(Color.DarkSlateGray) }
+            };
 
+           
             //Points
             HousePoints = new Dictionary<int, Point>();
             RoadPoints = new Dictionary<int, Point>();
@@ -278,6 +283,7 @@ namespace ClientApp
                 Point[] hexPoints = GetHexagonPoints(new Point((int)(sLeftOffset + cellSize * currentColumn), (int)(sTopOffset + (cellSize - cellSize * MathF.Sqrt(3) / 8f) * (currentRow - 2))), cellSize, true);
 
                 //Debug.Write($"TILE {i}");
+                
 
                 HousePoints[myBoard.housePositions[i, 0]] = hexPoints[4];
                 HousePoints[myBoard.housePositions[i, 1]] = hexPoints[3];
@@ -317,6 +323,17 @@ namespace ClientApp
             {
                 float radius = cellSize / 5f;
                 //g.DrawEllipse(new Pen(Color.Red), po.X - radius, po.Y - radius, radius * 2, radius*2);
+            }
+            for(int i = 0; i < myBoard.allNodes.Count(); i++)
+            {
+                if (myBoard.allNodes[i].Owner != null)
+                {
+                    Point pn = new Point(HousePoints[i].X, HousePoints[i].Y);
+                    int radius = 5;
+                    pn.X -= radius;
+                    pn.Y -= radius;
+                    g.FillEllipse(playerColors[myBoard.allNodes[i].Owner.Id], new Rectangle(pn.X, pn.Y, radius, radius));
+                }
             }
         }
         #endregion
