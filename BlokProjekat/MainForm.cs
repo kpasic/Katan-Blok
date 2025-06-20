@@ -52,13 +52,12 @@ namespace ClientApp
             gamePanel.MouseEnter += (object sender, EventArgs e) => gamePanel.Focus();
             gamePanel.MouseWheel += (object sender, MouseEventArgs e) =>
             {
-                //Debug.WriteLine($"detect scroll: {e.Delta} ");
+                
                 gameScale += gameScrollSpeed * e.Delta;
                 gameScale = Math.Clamp(gameScale, 0.1f, 0.9f);
                 gamePanel.Invalidate();
             };
-            //events
-            //Debug.WriteLine("startnigga");
+            
             gamePanel.Paint += DrawGame;
             Resize += (object sender, EventArgs e) => gamePanel.Invalidate();
             Resize += (object sender, EventArgs e) => Invalidate();
@@ -92,16 +91,16 @@ namespace ClientApp
 
             //Networking & Game
             myPlayer = new HumanPlayer("nis", 0);
-            transceiver = new MsgTransceiver(myBoard, myPlayer);
-
+            transceiver = new MsgTransceiver(myBoard, myPlayer, this);
             client = new NetworkClient(transceiver);
 
+            myPlayer.OnMoveRequested += OnMoveRequested;
+            myPlayer.OnDiscardRequested += OnDiscardRequested;
+        }
 
-            playerColors = new Dictionary<int, SolidBrush>
-            {
-                {0, new SolidBrush(Color.Blue)},
-                {1, new SolidBrush(Color.Red) }
-            };
+        private void OnDiscardRequested(HumanPlayer obj)
+        {
+            throw new NotImplementedException();
         }
 
         private float SqrDistance(Point a, Point b)
@@ -148,13 +147,17 @@ namespace ClientApp
             while (true)
             {
                 Point p = await MouseClickAsync(gamePanel);
-
+                Debug.WriteLine("click");
                 if (placingHouse)
                 {
                     int? index = CollidePoints(p, HousePoints);
                     if (index != null)
                     {
-
+                        HouseMove move = new HouseMove();
+                        move.nodeId = (int)index;
+                        move.nodeSpace = Space.House;
+                        myPlayer.SubmitMove(move);
+                        return;
                     }
                 }
                 else if (placingRoad)
@@ -168,12 +171,6 @@ namespace ClientApp
             }
             //player.SubmitMove(place);
             //ui sranja.
-        }
-
-        private void OnDiscardRequested(HumanPlayer player)
-        {
-            //mora da dozvoli submit samo ako je broj discardovanih ok.
-
         }
 
 
@@ -216,44 +213,6 @@ namespace ClientApp
             //Debug.Write($"jednakost referenca je {ReferenceEquals(myBoard, transceiver.board)}");
         }
 
-        public Point[] InscribeHexagonDEPRECATED(Point topLeft, int size, bool RT)
-        {
-            Point[] points = new Point[6];
-            Point topLeftT = new Point();
-            topLeftT.X = topLeft.X;
-            topLeftT.Y = topLeft.Y;
-
-            if (RT) (topLeftT.X, topLeftT.Y) = (topLeftT.X, topLeftT.Y);
-
-            points[0].X = topLeftT.X;
-            points[0].Y = topLeftT.Y + size / 2;
-
-            points[3].X = topLeftT.X + size;
-            points[3].Y = topLeft.Y + size / 2;
-
-            int length = (int)(size / Math.Sqrt(3f));
-
-            points[1].X = topLeftT.X + (size - length) / 2;
-            points[1].Y = topLeftT.Y + size;
-
-            points[2].X = topLeftT.X + (size - length) / 2 + length;
-            points[2].Y = topLeftT.Y + size;
-
-            points[4].X = topLeftT.X + (size - length) / 2 + length;
-            points[4].Y = topLeftT.Y;
-
-            points[5].X = topLeftT.X + (size - length) / 2;
-            points[5].Y = topLeftT.Y;
-
-            if (RT)
-            {
-                for (int i = 0; i < points.Length; i++)
-                {
-                    (points[i].X, points[i].Y) = (points[i].Y, points[i].X);
-                }
-            }
-            return points;
-        }
 
         static Point[] GetHexagonPoints(Point topLeft, float sideLength, bool pointy)
         {
@@ -341,7 +300,7 @@ namespace ClientApp
                 RoadPoints[myBoard.housePositions[i, 5]] = Lerp(hexPoints[1], hexPoints[2], 0.5f);
 
 
-                Debug.WriteLine("");
+                
 
                 float radius = cellSize / 5f;
                 //g.DrawEllipse(new Pen(Color.Red), hexPoints[0].X - radius, hexPoints[0].Y - radius, radius * 2, radius * 2);
@@ -357,7 +316,7 @@ namespace ClientApp
             foreach (int ind in HousePoints.Keys)
             {
                 float radius = cellSize / 5f;
-                //g.DrawEllipse(new Pen(Color.Blue), HousePoints[ind].X - radius, HousePoints[ind].Y - radius, radius*2, radius*2);
+                if(placingHouse) g.DrawEllipse(new Pen(Color.Blue), HousePoints[ind].X - radius, HousePoints[ind].Y - radius, radius*2, radius*2);
             }
 
             foreach (Point po in RoadPoints.Values)
@@ -382,6 +341,7 @@ namespace ClientApp
         private void btnBuildHouse_Click(object sender, EventArgs e)
         {
             placingHouse = !(placingHouse);
+            gamePanel.Invalidate();
         }
 
         private void btnStartServer_Click(object sender, EventArgs e)
@@ -391,8 +351,7 @@ namespace ClientApp
 
         private void testTimer_Tick(object sender, EventArgs e)
         {
-          //  Debug.WriteLine("sigma");
-          // Debug.WriteLine($"jednakost referenca je {ReferenceEquals(myBoard, transceiver.board)}");
+           //
         }
     }
 }

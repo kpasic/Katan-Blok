@@ -21,7 +21,18 @@ namespace CServer
 
         Dictionary<Resources, int> IPlayer.resources { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public int ResourcesCount => throw new NotImplementedException();
+        public int ResourcesCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (int item in resources.Values)
+                {
+                    count += item;
+                }
+                return count;
+            }
+        }
 
         public NetworkPlayer(TcpClient client, NetworkStream stream, string name, int id)
         {
@@ -29,6 +40,8 @@ namespace CServer
             this.stream = stream;
             Name = name;
             Id = id;
+
+            resources = new Dictionary<Resources, int>();
         }
 
         public async Task<Move> GetMove()

@@ -7,7 +7,7 @@ using CNetworking;
 namespace CServer{ 
     public class Program
     {
-        const int maxPlayers = 2;
+        static int maxPlayers;
         private static NetworkPlayer currentPlayer;
         private static bool playerRolled;
 
@@ -15,34 +15,52 @@ namespace CServer{
         private static List<IPlayer> players;
         private static CMessage stored;
         private static int storedLifespan;
+        private static HashSet<IPlayer> uninformedPlayers;
         public static async Task Start(NetworkPlayer player)
         {
             while (true)
             {
                 CMessage msg = await NetworkUtils.ReceiveObjectAsync<CMessage>(player.stream);
-                CMessage response = Proccess(msg, player);
+                Console.WriteLine($"poruka {msg.Type} plT {msg.PayloadType}");
+                CMessage response = await Proccess(msg, player);
                 if(storedLifespan <= 0)
                 {
                     stored = null;
-                    storedLifespan = players.Count - 1;
+                    storedLifespan = players.Count;
                 }
 
-                if (response.Type == "BoardState") Console.WriteLine("saljem board");
-                NetworkUtils.SendObjectAsync(response, player.stream);
+                if (response.Type == "BoardState") { 
+                    Console.WriteLine("saljem board");
+                    Console.WriteLine($"info {response.PayloadType} pl {response.Payload != null} rec {player.stream != null}");
+                }
+
+
+                await NetworkUtils.SendObjectAsync(response, player.stream);
                 if (response.Type == "BoardState") Console.WriteLine("poslao sam board");
                 if (response.Type == "EndGame") break;
             }
         }
         
-        public static CMessage Proccess(CMessage msg, NetworkPlayer sender)
+        public async static Task<CMessage> Proccess(CMessage msg, NetworkPlayer sender)
         {
             CMessage response;
             switch (msg.Type)
             {
+                
                 case "Ok":
-                    while (stored == null) Task.Delay(100);
-                    storedLifespan--;
-                    return stored;
+                    while (stored == null) await Task.Delay(1000);
+                    if (uninformedPlayers.Contains(sender))
+                    {
+                        storedLifespan--;
+                        uninformedPlayers.Remove(sender);
+                        return stored;
+                    }
+                    if (currentPlayer == sender) response = new CMessage("Play", null);
+                    else { 
+                        response = new CMessage("Wait", null); 
+                        await Task.Delay(1000);
+                    }
+                    return response;
                 case "Begin":
                     response = new CMessage("null", null);
                     if (sender == currentPlayer) response.Type = "Play";
@@ -50,6 +68,7 @@ namespace CServer{
                     return response;
                 case "RequestBoard":
                     Console.WriteLine("dobio sam request");
+                    await Task.Delay(1000);
                     response = new CMessage("BoardState", myGame.board);
                     return response;
                 case "RequestRoll":
@@ -62,25 +81,38 @@ namespace CServer{
                 case "Move":
                     Move move = (Move)msg.Payload;
                     (GameState state, IPlayer kys2) = myGame.Update(move);
+                    NetworkPlayer prevPlayer = currentPlayer;
                     currentPlayer = (NetworkPlayer)kys2;
-                    stored = new CMessage("Move", move);
-                    if (currentPlayer == sender) response = new CMessage("Play", null);
-                    else if (state == GameState.Active) response = new CMessage("Wait", null);
+                    int senderId = sender.Id;
+                    stored = new CMessage("Move", (move, senderId));
+                    foreach(NetworkPlayer pp in players)
+                    {
+                        if (pp != prevPlayer) uninformedPlayers.Add(pp);
+                    }
+                    if (myGame.GetGameState() == GameState.Active) response = new CMessage("Move", (move, sender.Id));
                     else response = new CMessage("EndGame", null);
-                    return response;                 
+                    return response;
                 default:
-                    throw new Exception($"Unrecognized client message: {msg.Type}");
-            }
-
+                    //throw new Exception($"Unrecognized client message: {msg.Type}");
+                    break;
+                }
+            Task.Delay(5000);
+            return new CMessage("Ok", null);
         }
 
 
         public static async Task Main(string[] args)
         {
             Console.WriteLine("Server startup");
+            Move move;
+            Console.WriteLine(typeof(Move).AssemblyQualifiedName);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
             int port = 5000;
             TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
+            Console.WriteLine("Enter number of players:");
+            maxPlayers = int.Parse(Console.ReadLine());
+
             Console.WriteLine("Server listening");
 
             players = new List<IPlayer>();
@@ -114,7 +146,7 @@ namespace CServer{
 
 
             myGame = new Game(players);
-            
+            currentPlayer = (NetworkPlayer)players[myGame.currentPlayerIndex];
             for (int i = 0; i < players.Count; i++)
             {
                 if(i != players.Count - 1) Start((NetworkPlayer)players[i]);
@@ -131,6 +163,26 @@ namespace CServer{
             listener.Stop();
             Console.ReadLine();
            
+        }
+
+        static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception ex = (Exception)args.ExceptionObject;
+            Console.WriteLine("\n===================================");
+            Console.WriteLine("A GLOBAL UNHANDLED EXCEPTION OCCURRED!");
+            Console.WriteLine($"Type: {ex.GetType().Name}");
+            Console.WriteLine($"Message: {ex.Message}");
+            Console.WriteLine($"Stack Trace:\n{ex.StackTrace}");
+            Console.WriteLine("===================================");
+
+            // Indicate whether the CLR is terminating. If false, the app might continue (rare for critical errors).
+            if (args.IsTerminating)
+            {
+                Console.WriteLine("\nApplication is terminating due to this unhandled exception.");
+            }
+
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey(); // Keep the console open
         }
     }
 }

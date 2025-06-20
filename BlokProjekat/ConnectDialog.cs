@@ -19,11 +19,12 @@ namespace ClientApp
         public ConnectDialog()
         {
             InitializeComponent();
+            txtPort.Text = "5000";
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            if ((IPAddress.TryParse(ip, out IPAddress? wht) == true && !string.IsNullOrEmpty(txtUserName.Text)) || true) 
+            if ((IPAddress.TryParse(txtIp.Text, out IPAddress? wht) == true && !string.IsNullOrEmpty(txtUserName.Text)) || true)
             {
                 ip = txtIp.Text;
                 port = int.Parse(txtPort.Text);
@@ -36,6 +37,12 @@ namespace ClientApp
             {
                 MessageBox.Show("Nije dobar ip ili nisi uneo ime");
             }
+        }
+
+        private void btnTesting_Click(object sender, EventArgs e)
+        {
+            txtIp.Text = "127.0.0.1";
+            txtUserName.Text = "testing123";
         }
     }
 }

@@ -32,6 +32,7 @@
             txtIp = new TextBox();
             txtPort = new TextBox();
             txtUserName = new TextBox();
+            btnTesting = new Button();
             SuspendLayout();
             // 
             // btnConnect
@@ -70,11 +71,22 @@
             txtUserName.Size = new Size(139, 23);
             txtUserName.TabIndex = 3;
             // 
+            // btnTesting
+            // 
+            btnTesting.Location = new Point(266, 1);
+            btnTesting.Name = "btnTesting";
+            btnTesting.Size = new Size(75, 23);
+            btnTesting.TabIndex = 4;
+            btnTesting.Text = "testig";
+            btnTesting.UseVisualStyleBackColor = true;
+            btnTesting.Click += btnTesting_Click;
+            // 
             // ConnectDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(409, 111);
+            Controls.Add(btnTesting);
             Controls.Add(txtUserName);
             Controls.Add(txtPort);
             Controls.Add(txtIp);
@@ -93,5 +105,6 @@
         private TextBox txtIp;
         private TextBox txtPort;
         private TextBox txtUserName;
+        private Button btnTesting;
     }
 }

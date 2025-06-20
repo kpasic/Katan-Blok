@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security.AccessControl;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Catan
@@ -254,13 +255,28 @@ namespace Catan
     #region Moves
     public abstract class Move
     {
+        public string MoveType => GetType().Name;
         public abstract void Execute(Board board, IPlayer player);
+
+        [JsonConstructor]
+        public Move() { } // This one is already good!
     }
 
     public class HouseMove : Move
     {
-        int nodeId;
-        Space nodeSpace;
+        public int nodeId { get; set; } // Make properties public with getters and setters
+        public Space nodeSpace { get; set; }
+
+        [JsonConstructor] // <--- Add this!
+        public HouseMove() : base() { } // Call the base constructor
+
+        // You can keep other constructors if needed for regular instantiation
+        public HouseMove(int nodeId, Space nodeSpace)
+        {
+            this.nodeId = nodeId;
+            this.nodeSpace = nodeSpace;
+        }
+
         public override void Execute(Board board, IPlayer player)
         {
             board.PlaceHouse(nodeId, player, nodeSpace);
@@ -269,8 +285,18 @@ namespace Catan
 
     public class FirstMove : Move
     {
-        int nodeId;
-        Space nodeSpace;
+        public int nodeId { get; set; }
+        public Space nodeSpace { get; set; }
+
+        [JsonConstructor] // <--- Add this!
+        public FirstMove() : base() { }
+
+        public FirstMove(int nodeId, Space nodeSpace)
+        {
+            this.nodeId = nodeId;
+            this.nodeSpace = nodeSpace;
+        }
+
         public override void Execute(Board board, IPlayer player)
         {
             board.PlaceHouse(nodeId, player, nodeSpace);
@@ -279,7 +305,16 @@ namespace Catan
 
     public class RoadMove : Move
     {
-        int roadId;
+        public int roadId { get; set; }
+
+        [JsonConstructor] // <--- Add this!
+        public RoadMove() : base() { }
+
+        public RoadMove(int roadId)
+        {
+            this.roadId = roadId;
+        }
+
         public override void Execute(Board board, IPlayer player)
         {
             board.PlaceRoad(roadId, player, Space.Road);
@@ -288,6 +323,9 @@ namespace Catan
 
     public class TradeMove : Move
     {
+        [JsonConstructor] // <--- Add this!
+        public TradeMove() : base() { }
+
         public override void Execute(Board board, IPlayer player)
         {
             throw new NotImplementedException();
@@ -296,8 +334,18 @@ namespace Catan
 
     public class RobberMove : Move
     {
-        int tileId;
-        IPlayer RobberPlayer;
+        public int tileId { get; set; }
+        public IPlayer RobberPlayer { get; set; } // Note: Deserializing interfaces directly can be complex; ensure IPlayer is handled.
+
+        [JsonConstructor] // <--- Add this!
+        public RobberMove() : base() { }
+
+        public RobberMove(int tileId, IPlayer robberPlayer)
+        {
+            this.tileId = tileId;
+            this.RobberPlayer = robberPlayer;
+        }
+
         public override void Execute(Board board, IPlayer player)
         {
             board.MoveRobber(tileId, player, RobberPlayer);
@@ -306,7 +354,16 @@ namespace Catan
 
     public class UpgradeMove : Move
     {
-        int nodeId;
+        public int nodeId { get; set; }
+
+        [JsonConstructor] // <--- Add this!
+        public UpgradeMove() : base() { }
+
+        public UpgradeMove(int nodeId)
+        {
+            this.nodeId = nodeId;
+        }
+
         public override void Execute(Board board, IPlayer player)
         {
             board.UpgradeHouse(nodeId, player);
@@ -315,6 +372,9 @@ namespace Catan
 
     public class EndMove : Move
     {
+        [JsonConstructor] // <--- Add this!
+        public EndMove() : base() { }
+
         public override void Execute(Board board, IPlayer player)
         {
             return;
@@ -323,10 +383,19 @@ namespace Catan
 
     public class DiscardMove : Move
     {
-        Dictionary<Resources, int> discarded;
+        public Dictionary<Resources, int> discarded { get; set; }
+
+        [JsonConstructor] // <--- Add this!
+        public DiscardMove() : base() { }
+
+        public DiscardMove(Dictionary<Resources, int> discarded)
+        {
+            this.discarded = discarded;
+        }
+
         public override void Execute(Board board, IPlayer player)
         {
-            foreach((Resources r, int i) in discarded)
+            foreach ((Resources r, int i) in discarded)
             {
                 player.RemoveResources(discarded);
             }
@@ -334,21 +403,21 @@ namespace Catan
     }
 
 
-
     #endregion
 
 
     public class Node
     {
-        public Node(int nmPlayers, int index) {
+        public Node(int nmPlayers, int nodeindex) {
             Owner = null;
             state = true;
-            nodeIndex = index;
+            nmplayers = nmPlayers;
+            nodeIndex = nodeindex;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
-            for(int i=0; i< nmPlayers; i++)isAvailable.Add(i);
+            for(int i=0; i < nmPlayers; i++)isAvailable.Add(i);
         }
-
+        public int nmplayers;
         public bool state;
         private HashSet<int> isAvailable;
         public int nodeIndex;
@@ -390,12 +459,12 @@ namespace Catan
         public Node nod1;
         public Node nod2;
 
-        public Edge(Node n1, Node n2, int id)
+        public Edge(Node Nod1, Node Nod2, int EdgeId)
         {
-            edgeId = id;
+            edgeId = EdgeId;
             Owner = null;
-            nod1 = n1;
-            nod2 = n2;
+            nod1 = Nod1;
+            nod2 = Nod2;
             Type = Space.Empty;
             isAvailable = new HashSet<int>();
         }

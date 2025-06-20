@@ -13,17 +13,22 @@ namespace ClientApp
     {
         public Board board { get; private set; }
         private HumanPlayer player;
+        private Control control;
+        private Dictionary<int, IPlayer> playerIds;
         //imaginarni chat receiver...
-        public MsgTransceiver(Board board, HumanPlayer player)
+        public MsgTransceiver(Board board, HumanPlayer player, Control Control)
         {
             this.board = board;
             this.player = player;
+            control = Control;
         }
 
         public async Task<CMessage> Proccess(CMessage msg)
         {
+            CMessage response = new CMessage("null", null);
             Debug.WriteLine($"STIGAO MY MSG TYPE {msg.Type}");
             if (msg == null) throw new Exception("zasto null :(");
+            control.Invalidate();
             switch (msg.Type)
             {
                 case "Play":
@@ -31,22 +36,26 @@ namespace ClientApp
                     Move reqMove = await player.GetMove();
                     return new CMessage("Move", reqMove);
                 case "Move":
-                    (Move move, IPlayer movingPlayer) = ((Move, IPlayer))msg.Payload;
-                    move.Execute(board, movingPlayer);
-                    break;
+                    (Move move, int id) = ((Move, int))msg.Payload;
+                    HumanPlayer fakePlayer = new HumanPlayer("ne znam", id);
+                    move.Execute(board, fakePlayer);
+                    response.Type = "Ok";
+                    response.Payload = null;
+                    return response;
                 case "BoardState":
-                    Debug.WriteLine($"TYPE BGOARD {msg.PayloadType}");
-                    Debug.WriteLine($"omg nigga");
                     Board newBoard = (Board)msg.Payload;
                     board.Clone(newBoard);
-                    Debug.WriteLine($"test {board.board[0]}");
-                    CMessage response = new CMessage("Ok", null);
+                    response = new CMessage("Begin", null);
                     return response;
-               
                 case "Chat":
                     string message = (string)msg.Payload;
                     //imaginarni chat
                     break;
+                case "Wait":
+                    player.myTurn = false;
+                    response.Type = "Ok";
+                    response.Payload = null;
+                    return response; 
                 default:
                     throw new Exception($"Unrecognized message type: {msg.Type}");
             }
