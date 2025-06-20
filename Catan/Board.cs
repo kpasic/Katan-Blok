@@ -579,6 +579,7 @@ namespace Catan
             Tile.Wood, Tile.Wood, Tile.Wood, Tile.Wood,
             Tile.Stone,Tile.Stone, Tile.Stone,
             Tile.Brick,Tile.Brick,Tile.Brick};
+            allPlayers = new Dictionary<int, IPlayer>();
             foreach (IPlayer player in players)
             {
                 allPlayers[player.Id] = player;
@@ -972,6 +973,7 @@ namespace Catan
             this.portNodes = other.portNodes;
             this.portStrings = other.portStrings;
             this.allPlayers = other.allPlayers;
+
     }
         
     }
